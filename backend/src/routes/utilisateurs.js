@@ -1,0 +1,13 @@
+const express = require("express");
+const router = express.Router();
+const auth = require("../middleware/authMiddleware");
+const controller = require("../controllers/utilisateursControllers");
+
+// Toutes ces routes nécessitent un token (admin ou PF)
+router.get("/", auth, controller.getAll);
+router.get("/:id", auth, controller.getOne);
+router.post("/", auth, controller.create);
+router.put("/:id", auth, controller.update);
+router.delete("/:id", auth, controller.delete);
+
+module.exports = router;

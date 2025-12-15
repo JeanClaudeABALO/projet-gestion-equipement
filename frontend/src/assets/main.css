@@ -1,0 +1,30 @@
+/* RESET + layout global */
+*,
+*::before,
+*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Application layout: flex column so footer can be pushed */
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* MAIN content: reserve space for fixed header (125px) and footer (if any) */
+.main-content {
+  flex: 1;
+  width: 100%;
+  padding-top: 125px;   /* IMPORTANT: equals header total height (70 + 55) */
+  box-sizing: border-box;
+}
+
+/* If you have a footer fixed, also add padding-bottom accordingly */
+/* .main-content { padding-bottom: 80px; } */
