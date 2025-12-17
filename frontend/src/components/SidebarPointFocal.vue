@@ -11,11 +11,6 @@
           <span class="label">Tableau de bord</span>
         </li>
 
-        <li @click="go('/unites')">
-          <span class="icon">🏥</span>
-          <span class="label">Unités</span>
-        </li>
-
         <li @click="go('/equipements')">
           <span class="icon">📦</span>
           <span class="label">Équipements</span>
@@ -26,14 +21,9 @@
           <span class="label">Réparations</span>
         </li>
 
-        <li @click="go('/notifications')">
-          <span class="icon">🔔</span>
-          <span class="label">Notifications</span>
-        </li>
-
-        <li @click="go('/logs')">
-          <span class="icon">🕒</span>
-          <span class="label">Dernières modifications</span>
+        <li @click="logout" style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 10px;">
+          <span class="icon">🚪</span>
+          <span class="label">Déconnexion</span>
         </li>
       </ul>
     </nav>
@@ -51,6 +41,12 @@ const router = useRouter();
 
 function go(path) {
   router.push(path);
+}
+
+function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("role");
+  router.push("/");
 }
 </script>
 

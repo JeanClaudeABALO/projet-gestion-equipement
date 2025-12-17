@@ -58,3 +58,91 @@ exports.login = async (req, res) => {
         }
     });
 };
+
+// Vérifier si un admin existe déjà
+exports.checkAdminExists = async (req, res) => {
+    try {
+        const [admins] = await db
+            .promise()
+            .query(
+                `SELECT u.id FROM utilisateurs u 
+                 JOIN roles r ON u.role_id = r.id 
+                 WHERE r.code = 'admin'`
+            );
+
+        res.json({ exists: admins.length > 0 });
+    } catch (error) {
+        console.error("Erreur vérification admin:", error);
+        res.status(500).json({ message: "Erreur serveur", error: error.message });
+    }
+};
+
+// Créer l'administrateur principal (uniquement si aucun admin n'existe)
+exports.registerAdmin = async (req, res) => {
+    try {
+        const { nom, email, password } = req.body;
+
+        if (!nom || !email || !password) {
+            return res.status(400).json({ 
+                message: "Nom, email et mot de passe sont obligatoires" 
+            });
+        }
+
+        // Vérifier qu'aucun admin n'existe déjà
+        const [existingAdmins] = await db
+            .promise()
+            .query(
+                `SELECT u.id FROM utilisateurs u 
+                 JOIN roles r ON u.role_id = r.id 
+                 WHERE r.code = 'admin'`
+            );
+
+        if (existingAdmins.length > 0) {
+            return res.status(403).json({ 
+                message: "Un administrateur existe déjà. L'inscription est fermée." 
+            });
+        }
+
+        // Vérifier que l'email n'est pas déjà utilisé
+        const [existingEmail] = await db
+            .promise()
+            .query("SELECT id FROM utilisateurs WHERE email = ?", [email]);
+
+        if (existingEmail.length > 0) {
+            return res.status(400).json({ message: "Cet email est déjà utilisé" });
+        }
+
+        // Récupérer l'ID du rôle admin
+        const [roles] = await db
+            .promise()
+            .query("SELECT id FROM roles WHERE code = 'admin'");
+
+        if (roles.length === 0) {
+            return res.status(500).json({ 
+                message: "Rôle administrateur introuvable dans la base de données" 
+            });
+        }
+
+        const adminRoleId = roles[0].id;
+
+        // Hasher le mot de passe
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Créer l'admin
+        const [result] = await db
+            .promise()
+            .query(
+                `INSERT INTO utilisateurs (nom, email, password, role_id, actif) 
+                 VALUES (?, ?, ?, ?, 1)`,
+                [nom, email, hashedPassword, adminRoleId]
+            );
+
+        res.json({
+            message: "Administrateur créé avec succès",
+            id: result.insertId
+        });
+    } catch (error) {
+        console.error("Erreur création admin:", error);
+        res.status(500).json({ message: "Erreur serveur", error: error.message });
+    }
+};

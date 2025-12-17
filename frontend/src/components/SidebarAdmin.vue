@@ -3,33 +3,59 @@
     <h2 class="sidebar-title">Administration</h2>
 
     <ul class="menu">
-      <li class="menu-item active">
-        <span class="icon">📦</span>
-        <span>Équipements</span>
+      <li class="menu-item" @click="go('/dashboard/admin')">
+        <span class="icon">🏠</span>
+        <span>Tableau de bord</span>
       </li>
 
-      <li class="menu-item">
-        <span class="icon">🏥</span>
-        <span>Unités</span>
-      </li>
-
-      <li class="menu-item">
+      <li class="menu-item" @click="go('/departements')">
         <span class="icon">🏛️</span>
         <span>Départements</span>
       </li>
 
-      <li class="menu-item">
-        <span class="icon">🔔</span>
-        <span>Notifications</span>
+      <li class="menu-item" @click="go('/unites')">
+        <span class="icon">🏥</span>
+        <span>Unités</span>
       </li>
 
-      <li class="menu-item">
-        <span class="icon">🕒</span>
-        <span>Dernières modifications</span>
+      <li class="menu-item" @click="go('/equipements')">
+        <span class="icon">📦</span>
+        <span>Équipements</span>
+      </li>
+
+      <li class="menu-item" @click="go('/utilisateurs')">
+        <span class="icon">👥</span>
+        <span>Utilisateurs</span>
+      </li>
+
+      <li class="menu-item" @click="go('/reparations')">
+        <span class="icon">🛠</span>
+        <span>Réparations</span>
+      </li>
+
+      <li class="menu-item" @click="logout">
+        <span class="icon">🚪</span>
+        <span>Déconnexion</span>
       </li>
     </ul>
   </aside>
 </template>
+
+<script setup>
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+function go(path) {
+  router.push(path);
+}
+
+function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("role");
+  router.push("/");
+}
+</script>
 
 <style scoped>
 .sidebar {
