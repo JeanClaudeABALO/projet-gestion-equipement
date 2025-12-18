@@ -4,6 +4,7 @@ import Departements from "../pages/Departements.vue";
 import Equipements from "../pages/Equipements.vue";
 import Unites from "../pages/Unites.vue";
 import Reparations from "../pages/Reparations.vue";
+import ReparationsPF from "../pages/ReparationsPF.vue";
 import Home from "../pages/Home.vue";
 import Login from "../pages/Login.vue";
 import DashboardAdmin from "../pages/DashboardAdmin.vue";
@@ -47,7 +48,12 @@ const routes = [
   { 
     path: "/reparations", 
     component: Reparations,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, role: "admin" }
+  },
+  { 
+    path: "/dashboard-point-focal/reparations", 
+    component: ReparationsPF,
+    meta: { requiresAuth: true, role: "pf" }
   },
   { 
     path: "/unites", 

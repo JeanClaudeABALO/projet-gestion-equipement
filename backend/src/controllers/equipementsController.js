@@ -49,32 +49,67 @@ exports.getOne = (req, res) => {
 // ======================
 // Ajout d’un équipement
 // ======================
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
     const { unite_id, type_id, quantite, etat, commentaire } = req.body;
 
     if (!unite_id || !type_id) {
         return res.status(400).json({ message: "unite_id et type_id sont obligatoires" });
     }
 
-    const sql = `
-        INSERT INTO equipements (unite_id, type_id, quantite, etat, commentaire, responsable_id)
-        VALUES (?, ?, ?, ?, ?, ?)
-    `;
+    try {
+        // Si l'utilisateur est Point Focal, on vérifie que l'unité appartient bien
+        // à son département avant d'autoriser la création.
+        if (req.user.role === "pf") {
+            // Récupérer le département du PF
+            const [userData] = await db
+                .promise()
+                .query("SELECT departement_id FROM utilisateurs WHERE id = ?", [req.user.id]);
 
-    const values = [
-        unite_id,
-        type_id,
-        quantite || 1,
-        etat || "fonctionnel",
-        commentaire || null,
-        req.user.id
-    ];
+            if (!userData[0] || !userData[0].departement_id) {
+                return res.status(403).json({ message: "Vous n'êtes rattaché à aucun département" });
+            }
 
-    db.query(sql, values, (err, result) => {
-        if (err) return res.status(500).json({ error: err });
+            const pfDepartementId = userData[0].departement_id;
 
-        res.json({ message: "Équipement ajouté", id: result.insertId });
-    });
+            // Vérifier que l'unité est bien dans ce département
+            const [uniteData] = await db
+                .promise()
+                .query("SELECT departement_id FROM unites WHERE id = ?", [unite_id]);
+
+            if (uniteData.length === 0) {
+                return res.status(404).json({ message: "Unité non trouvée" });
+            }
+
+            if (uniteData[0].departement_id !== pfDepartementId) {
+                return res.status(403).json({
+                    message: "Vous ne pouvez ajouter des équipements que pour les unités de votre département"
+                });
+            }
+        }
+
+        const sql = `
+            INSERT INTO equipements (unite_id, type_id, quantite, etat, commentaire, responsable_id)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `;
+
+        const values = [
+            unite_id,
+            type_id,
+            quantite || 1,
+            etat || "fonctionnel",
+            commentaire || null,
+            req.user.id
+        ];
+
+        db.query(sql, values, (err, result) => {
+            if (err) return res.status(500).json({ error: err });
+
+            res.json({ message: "Équipement ajouté", id: result.insertId });
+        });
+    } catch (error) {
+        console.error("Erreur création équipement:", error);
+        res.status(500).json({ message: "Erreur serveur", error: error.message });
+    }
 };
 
 // ======================

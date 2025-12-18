@@ -152,21 +152,46 @@ const equipementsFiltres = computed(() => {
 });
 
 async function loadData() {
+  const role = localStorage.getItem("role");
+
+  // 1) Charger la liste des équipements selon le rôle
   try {
-    const [e, d, u, t] = await Promise.all([
-      equipementApi.getAll(),
+    let e;
+    if (role === "admin") {
+      e = await equipementApi.getAll();
+    } else if (role === "pf") {
+      // PF : uniquement les équipements de son département
+      e = await equipementApi.getByDepartement();
+    }
+
+    equipements.value = e?.data || [];
+  } catch (error) {
+    console.error(
+      "Erreur lors du chargement des équipements:",
+      error
+    );
+    equipements.value = [];
+  }
+
+  // 2) Charger toujours les listes nécessaires au modal (accessibles PF + ADMIN)
+  try {
+    const [d, u, t] = await Promise.all([
       departementsApi.getAll(),
       unitesApi.getAll(),
-      typesApi.getAll()
+      typesApi.getAll(),
     ]);
 
-    equipements.value = e.data || [];
     departements.value = d.data || [];
     unites.value = u.data || [];
     types.value = t.data || [];
   } catch (error) {
-    console.error("Erreur lors du chargement:", error);
-    alert("Erreur lors du chargement des données.");
+    console.error(
+      "Erreur lors du chargement des listes (départements / unités / types):",
+      error
+    );
+    alert(
+      "Erreur lors du chargement des listes pour le formulaire. Vérifiez la console."
+    );
   }
 }
 

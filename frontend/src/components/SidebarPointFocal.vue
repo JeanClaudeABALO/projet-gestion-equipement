@@ -16,7 +16,7 @@
           <span class="label">Équipements</span>
         </li>
 
-        <li @click="go('/reparations')">
+        <li @click="go('/dashboard-point-focal/reparations')">
           <span class="icon">🛠</span>
           <span class="label">Réparations</span>
         </li>

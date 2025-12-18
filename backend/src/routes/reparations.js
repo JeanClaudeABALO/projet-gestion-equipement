@@ -1,12 +1,22 @@
 const express = require("express");
 const auth = require("../middleware/authMiddleware");
+const adminOnly = require("../middleware/adminMiddleware");
 const controller = require("../controllers/reparationsController");
 const router = express.Router();
 
-router.get("/", auth, controller.getAll);
-router.get("/:id", auth, controller.getOne);
+// PF : réparations de son département
+router.get("/departement/mon-departement", auth, controller.getByDepartement);
+
+// PF : déclarer une panne
 router.post("/", auth, controller.create);
-router.put("/:id", auth, controller.update);
-router.delete("/:id", auth, controller.delete);
+
+// ADMIN : lister toutes les réparations
+router.get("/", auth, adminOnly, controller.getAll);
+
+// ADMIN : mise à jour du statut / traitement
+router.put("/:id/statut", auth, adminOnly, controller.updateStatut);
+
+// ADMIN : suppression éventuelle
+router.delete("/:id", auth, adminOnly, controller.delete);
 
 module.exports = router;
