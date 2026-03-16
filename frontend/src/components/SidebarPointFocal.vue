@@ -123,6 +123,13 @@ function logout() {
   transform: translateX(-100%);
 }
 
+@media (max-width: 768px) {
+  .sidebar {
+    width: 260px;
+    box-shadow: 8px 0 30px rgba(0, 0, 0, 0.3);
+  }
+}
+
 /* Header */
 .sidebar-header {
   padding: 24px 20px;

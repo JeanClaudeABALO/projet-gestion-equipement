@@ -8,9 +8,18 @@ import AppFooter from "./components/AppFooter.vue";
 const sidebarOpen = ref(true);
 const route = useRoute();
 
+// Footer masqué sur toutes les pages avec sidebar (espace connecté)
 const showFooter = computed(() => {
   const path = route.path;
-  return !path.startsWith("/dashboard") && !path.startsWith("/dashboard-point-focal");
+  const hasSidebar =
+    path.startsWith("/dashboard") ||
+    path.startsWith("/dashboard-point-focal") ||
+    path === "/departements" ||
+    path === "/unites" ||
+    path === "/reparations" ||
+    path === "/equipements" ||
+    path === "/utilisateurs";
+  return !hasSidebar && path !== "/login" && path !== "/change-password";
 });
 
 function toggleSidebar() {

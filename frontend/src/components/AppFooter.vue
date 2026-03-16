@@ -45,14 +45,15 @@ const year = new Date().getFullYear();
 </script>
 
 <style scoped>
-/* Bande bleue full-width */
+/* Bande bleue full-width - position normale (pas fixed) */
 .footer {
   width: 100%;
   background-color: #073b75;
   color: white;
   padding: 20px;
-  margin-top: auto; /* important si layout flex */
+  margin-top: auto; /* pousse en bas du flex container */
   flex-shrink: 0;
+  position: relative; /* flux normal, jamais fixed */
 }
 
 /* Contenu centré et moins large */

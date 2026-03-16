@@ -674,5 +674,58 @@ onMounted(async () => {
   font-weight: 500;
   font-family: 'Inter', sans-serif;
 }
+
+@media (max-width: 768px) {
+  .header-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  
+  .header-content h1 {
+    font-size: 22px;
+  }
+  
+  .filters-card {
+    padding: 16px;
+  }
+  
+  .filters-row {
+    flex-direction: column;
+  }
+  
+  .filters-row select {
+    min-width: 100%;
+  }
+  
+  .search-input-wrapper {
+    max-width: 100%;
+  }
+  
+  .table-body-scroll {
+    max-height: 50vh;
+  }
+  
+  .data-table {
+    min-width: 650px;
+  }
+  
+  .scroll-to-bottom-btn {
+    bottom: 20px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-content h1 {
+    font-size: 18px;
+  }
+  
+  .data-table {
+    min-width: 600px;
+  }
+}
 </style>
 

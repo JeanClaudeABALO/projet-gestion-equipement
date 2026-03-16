@@ -423,7 +423,19 @@ function goToPlatform() {
   display: inline-block;
 }
 
-/* small screens: collapse spacing */
+/* Tablettes et petits écrans */
+@media (max-width: 992px) {
+  .app-header__inner {
+    padding: 0 16px;
+  }
+  
+  .menu-link {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+}
+
+/* Mobile */
 @media (max-width: 768px) {
   .app-header__inner { 
     padding: 0 12px; 
@@ -469,6 +481,67 @@ function goToPlatform() {
   
   .right {
     margin-left: auto;
+  }
+  
+  .btn-primary,
+  .btn-secondary {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+  
+  .logout-btn {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+  
+  .logout-btn .label {
+    display: none;
+  }
+  
+  .sidebar-toggle-btn-fixed {
+    top: 6px;
+    left: 6px;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+}
+
+/* Très petits écrans */
+@media (max-width: 480px) {
+  .app-header__inner {
+    height: auto;
+    min-height: 70px;
+    padding: 10px 10px 12px;
+  }
+  
+  .ministry-title {
+    font-size: 11px;
+  }
+  
+  .republic-text {
+    font-size: 10px;
+  }
+  
+  .flag-strip {
+    max-width: 100px;
+    height: 5px;
+  }
+  
+  .menu-link {
+    padding: 5px 8px;
+    font-size: 11px;
+  }
+  
+  .btn-secondary {
+    margin-right: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  
+  .btn-primary {
+    padding: 6px 10px;
+    font-size: 12px;
   }
 }
 </style>

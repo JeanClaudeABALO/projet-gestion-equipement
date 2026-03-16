@@ -472,4 +472,49 @@ tbody tr:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(10, 91, 196, 0.3);
 }
+
+@media (max-width: 768px) {
+  .header-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .header-content h1 {
+    font-size: 22px;
+  }
+  
+  .filters-card {
+    padding: 16px;
+  }
+  
+  .filters-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .filter-item {
+    width: 100%;
+  }
+  
+  .table-card {
+    overflow-x: auto;
+  }
+  
+  .table-card table {
+    min-width: 700px;
+  }
+  
+  .modal {
+    width: 95%;
+    max-width: none;
+    margin: 16px;
+    padding: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-content h1 {
+    font-size: 18px;
+  }
+}
 </style>

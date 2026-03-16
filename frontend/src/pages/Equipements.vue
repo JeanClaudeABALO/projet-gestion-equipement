@@ -859,4 +859,59 @@ onMounted(async () => {
   font-weight: 500;
   font-family: 'Inter', sans-serif;
 }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .header-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  
+  .header-content h1 {
+    font-size: 22px;
+  }
+  
+  .add-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .filters-card {
+    padding: 16px;
+  }
+  
+  .filters-row {
+    flex-direction: column;
+  }
+  
+  .filters-row select {
+    min-width: 100%;
+  }
+  
+  .table-body-scroll {
+    max-height: 50vh;
+  }
+  
+  .data-table {
+    min-width: 800px;
+  }
+  
+  .scroll-to-bottom-btn {
+    bottom: 20px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-content h1 {
+    font-size: 18px;
+  }
+  
+  .data-table {
+    min-width: 700px;
+  }
+}
 </style>

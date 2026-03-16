@@ -1,52 +1,67 @@
 # Guide : Mettre le projet sur GitHub
 
-## État actuel
-- ✅ Dépôt Git initialisé
-- ✅ Connecté à : https://github.com/JeanClaudeABALO/projet-gestion-equipement
-- ⏳ Modifications à committer et pousser
+## ✅ Déjà fait
+- Dépôt Git initialisé
+- Fichiers ajoutés et commit créé (68 fichiers)
+- Le fichier `.env` est dans `.gitignore` — il ne sera pas envoyé ✅
 
 ---
 
-## Étapes à suivre
+## ⚠️ À faire : Créer le dépôt sur GitHub
 
-### Étape 1 : Vérifier que le fichier .env n'est pas versionné
-Le fichier `.env` (mots de passe, clés) est déjà dans `.gitignore` — il ne sera pas envoyé sur GitHub. ✅
+Le dépôt distant n'existe pas encore. Suivez ces étapes :
 
-### Étape 2 : Ajouter tous les fichiers modifiés
+### Étape 1 : Créer le dépôt sur GitHub
+
+1. Allez sur **https://github.com/new**
+2. Remplissez :
+   - **Repository name :** `projet-gestion-equipement`
+   - **Description :** (optionnel) "Plateforme de gestion des équipements CDSP"
+   - **Visibilité :** Public ou Private
+   - ⚠️ **Ne cochez PAS** "Add a README" — le projet existe déjà
+3. Cliquez sur **Create repository**
+
+### Étape 2 : Mettre à jour l’URL du remote (si votre nom d’utilisateur GitHub est différent)
+
+Si votre compte GitHub n’est pas `JeanClaudeABALO`, modifiez l’URL :
+
 ```bash
-git add .
+git remote set-url origin https://github.com/VOTRE_USERNAME/projet-gestion-equipement.git
 ```
 
-### Étape 3 : Créer un commit avec un message descriptif
-```bash
-git commit -m "Refonte complète : format WabaJob, images de fond, animations, super admin"
-```
+### Étape 3 : Pousser le code
 
-### Étape 4 : Pousser vers GitHub
 ```bash
 git push -u origin main
 ```
 
-**Note :** Si c'est la première fois, GitHub peut demander une authentification :
-- **Option A :** Token personnel (recommandé) — Créez un token sur GitHub → Settings → Developer settings → Personal access tokens
-- **Option B :** GitHub CLI — Installez `gh` et faites `gh auth login`
+### Étape 4 : Authentification
+
+GitHub demandera probablement une authentification :
+
+- **Option A — Token personnel (recommandé) :**
+  1. GitHub → Settings → Developer settings → Personal access tokens
+  2. Generate new token (classic)
+  3. Cochez au minimum `repo`
+  4. Utilisez le token comme mot de passe quand Git le demande
+
+- **Option B — GitHub CLI :**
+  ```bash
+  winget install GitHub.cli
+  gh auth login
+  ```
 
 ---
 
-## En cas de conflit ou d'erreur
+## Commandes utiles
 
-### Erreur "rejected" (l'historique distant a changé)
 ```bash
-git pull origin main --rebase
-git push origin main
-```
-
-### Vérifier le statut
-```bash
+# Vérifier le statut
 git status
-```
 
-### Voir l'historique des commits
-```bash
+# Voir l'historique
 git log --oneline -5
+
+# Vérifier le remote
+git remote -v
 ```

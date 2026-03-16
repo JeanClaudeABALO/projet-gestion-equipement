@@ -3,9 +3,16 @@
 *::before,
 *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html, body, #app {
+html {
   width: 100%;
-  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+body {
+  width: 100%;
+  min-height: 100vh;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
@@ -14,11 +21,12 @@ html, body, #app {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Application layout: flex column so footer can be pushed */
+/* Application layout: flex column, footer défile avec le contenu (pas fixed) */
 #app {
+  width: 100%;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
 }
 
 /* MAIN content: reserve space for fixed header (80px) */
@@ -27,7 +35,60 @@ html, body, #app {
   width: 100%;
   padding-top: 80px;   /* IMPORTANT: equals header height */
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 
-/* If you have a footer fixed, also add padding-bottom accordingly */
-/* .main-content { padding-bottom: 80px; } */
+/* Responsive: header plus petit sur mobile */
+@media (max-width: 768px) {
+  .main-content {
+    padding-top: 70px;
+  }
+}
+
+/* Très petits écrans */
+@media (max-width: 480px) {
+  .main-content {
+    padding-top: 60px;
+  }
+}
+
+/* Content wrapper et admin-content (pages avec sidebar) : plein écran sur mobile */
+@media (max-width: 768px) {
+  .content-wrapper {
+    margin-left: 0 !important;
+    padding: 16px 12px !important;
+    width: 100% !important;
+  }
+  
+  .admin-content {
+    margin-left: 0 !important;
+    padding: 20px 12px !important;
+  }
+  
+  .pf-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding: 20px 12px !important;
+  }
+}
+
+/* Pages publiques : padding mobile */
+@media (max-width: 768px) {
+  .page-container {
+    padding: 40px 16px 60px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-container {
+    padding: 24px 12px 48px !important;
+  }
+}
+
+/* Modals : padding réduit sur mobile */
+@media (max-width: 480px) {
+  .modal {
+    padding: 20px 16px !important;
+    margin: 12px !important;
+  }
+}

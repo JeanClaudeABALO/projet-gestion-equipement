@@ -828,7 +828,22 @@ watch(() => route.path, (newPath) => {
 }
 
 /* RESPONSIVE */
+@media (max-width: 992px) {
+  .content-section {
+    padding: 60px 16px;
+  }
+  
+  .section-container {
+    padding: 0 8px;
+  }
+}
+
 @media (max-width: 768px) {
+  .hero-section {
+    min-height: 400px;
+    padding: 60px 16px 60px;
+  }
+  
   .hero-title {
     font-size: 28px;
   }
@@ -841,6 +856,17 @@ watch(() => route.path, (newPath) => {
     font-size: 16px;
   }
   
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  .hero-actions .btn {
+    width: 100%;
+  }
+  
   .section-title {
     font-size: 28px;
   }
@@ -849,8 +875,17 @@ watch(() => route.path, (newPath) => {
     font-size: 28px;
   }
   
+  .content-section {
+    padding: 48px 12px;
+  }
+  
+  .section-subtitle {
+    margin-bottom: 32px;
+  }
+  
   .cards-grid {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
   
   .process-cards {
@@ -860,6 +895,49 @@ watch(() => route.path, (newPath) => {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
+  }
+  
+  .stat-card {
+    padding: 24px 16px;
+  }
+  
+  .stat-value {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    min-height: 350px;
+    padding: 48px 12px 48px;
+  }
+  
+  .hero-title {
+    font-size: 22px;
+  }
+  
+  .hero-subtitle-main {
+    font-size: 18px;
+  }
+  
+  .hero-description {
+    font-size: 14px;
+  }
+  
+  .section-title {
+    font-size: 22px;
+  }
+  
+  .stats-section .section-title {
+    font-size: 22px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .section-label {
+    font-size: 12px;
   }
 }
 </style>
