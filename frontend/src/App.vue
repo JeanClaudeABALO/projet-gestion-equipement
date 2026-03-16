@@ -1,12 +1,33 @@
 <script setup>
-import { ref, provide, computed } from "vue";
+import { ref, provide, computed, onMounted, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
 import AppHeader from "./components/AppHeader.vue";
 import AppFooter from "./components/AppFooter.vue";
 
+const MOBILE_BREAKPOINT = 768;
+
 // État global de la sidebar
 const sidebarOpen = ref(true);
 const route = useRoute();
+const isMobile = ref(false);
+
+function checkMobile() {
+  isMobile.value = window.innerWidth < MOBILE_BREAKPOINT;
+  if (isMobile.value) {
+    sidebarOpen.value = false;
+  } else {
+    sidebarOpen.value = true;
+  }
+}
+
+onMounted(() => {
+  checkMobile();
+  window.addEventListener("resize", checkMobile);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", checkMobile);
+});
 
 // Footer masqué sur toutes les pages avec sidebar (espace connecté)
 const showFooter = computed(() => {
@@ -27,8 +48,10 @@ function toggleSidebar() {
 }
 
 // Fournir l'état aux composants enfants
-provide('sidebarOpen', sidebarOpen);
-provide('toggleSidebar', toggleSidebar);
+provide("sidebarOpen", sidebarOpen);
+provide("toggleSidebar", toggleSidebar);
+provide("isMobile", isMobile);
+provide("MOBILE_BREAKPOINT", MOBILE_BREAKPOINT);
 </script>
 
 <template>

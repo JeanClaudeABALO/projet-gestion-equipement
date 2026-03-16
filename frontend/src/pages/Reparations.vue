@@ -377,8 +377,8 @@ onMounted(loadData);
 .filter-item select:focus,
 .filter-item input[type="date"]:focus {
   outline: none;
-  border-color: #0a5bc4;
-  box-shadow: 0 0 0 3px rgba(10, 91, 196, 0.1);
+  border-color: #1a6fd4;
+  box-shadow: 0 0 0 3px rgba(26, 111, 212, 0.1);
 }
 
 .dates-row {
@@ -431,7 +431,7 @@ table {
 
 /* TABLE HEADER */
 thead {
-  background: linear-gradient(135deg, #0a5bc4 0%, #09315c 100%);
+  background: linear-gradient(135deg, #1a6fd4 0%, #0f4a7a 100%);
 }
 
 thead th {
@@ -503,16 +503,16 @@ tbody tr:hover {
   font-size: 13px;
   font-weight: 600;
   font-family: 'Inter', sans-serif;
-  background: linear-gradient(135deg, #0a5bc4 0%, #09315c 100%);
+  background: linear-gradient(135deg, #1a6fd4 0%, #0f4a7a 100%);
   color: white;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(10, 91, 196, 0.2);
+  box-shadow: 0 2px 4px rgba(26, 111, 212, 0.2);
   letter-spacing: 0.3px;
 }
 
 .action-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(10, 91, 196, 0.3);
+  box-shadow: 0 4px 8px rgba(26, 111, 212, 0.3);
 }
 
 .badge {
@@ -601,7 +601,7 @@ tbody tr:hover {
   padding: 12px;
   background: #f8fafc;
   border-radius: 10px;
-  border-left: 4px solid #0a5bc4;
+  border-left: 4px solid #1a6fd4;
 }
 
 .form-group {
@@ -632,8 +632,8 @@ tbody tr:hover {
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #0a5bc4;
-  box-shadow: 0 0 0 3px rgba(10, 91, 196, 0.1);
+  border-color: #1a6fd4;
+  box-shadow: 0 0 0 3px rgba(26, 111, 212, 0.1);
 }
 
 .form-group textarea {
@@ -674,19 +674,19 @@ tbody tr:hover {
   padding: 12px 24px;
   border-radius: 10px;
   border: none;
-  background: linear-gradient(135deg, #0a5bc4 0%, #09315c 100%);
+  background: linear-gradient(135deg, #1a6fd4 0%, #0f4a7a 100%);
   color: white;
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
   font-family: 'Inter', sans-serif;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(10, 91, 196, 0.2);
+  box-shadow: 0 2px 4px rgba(26, 111, 212, 0.2);
 }
 
 .btn-confirm:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(10, 91, 196, 0.3);
+  box-shadow: 0 4px 8px rgba(26, 111, 212, 0.3);
 }
 
 @media (max-width: 768px) {

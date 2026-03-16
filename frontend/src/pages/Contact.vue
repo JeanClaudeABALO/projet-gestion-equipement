@@ -168,7 +168,7 @@ const router = useRouter();
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.2em;
-  color: #0a5bc4;
+  color: #1a6fd4;
   text-transform: uppercase;
   margin-bottom: 14px;
 }
@@ -315,7 +315,7 @@ const router = useRouter();
 }
 
 .btn-primary {
-  background: #0a5bc4;
+  background: #1a6fd4;
   color: white;
 }
 
@@ -327,12 +327,12 @@ const router = useRouter();
 
 .btn-secondary {
   background: transparent;
-  color: #073b75;
-  border: 2px solid #073b75;
+  color: #1a5a9e;
+  border: 2px solid #1a5a9e;
 }
 
 .btn-secondary:hover {
-  background: #073b75;
+  background: #1a5a9e;
   color: white;
   transform: translateY(-2px);
 }

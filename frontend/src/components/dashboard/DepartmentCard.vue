@@ -74,14 +74,14 @@ function toggleExpand() {
 }
 
 .department-card:hover {
-  border-color: #0a5bc4;
-  box-shadow: 0 4px 12px rgba(10, 91, 196, 0.1);
+  border-color: #1a6fd4;
+  box-shadow: 0 4px 12px rgba(26, 111, 212, 0.1);
   transform: translateY(-2px);
 }
 
 .department-card.is-expanded {
-  border-color: #0a5bc4;
-  box-shadow: 0 4px 16px rgba(10, 91, 196, 0.15);
+  border-color: #1a6fd4;
+  box-shadow: 0 4px 16px rgba(26, 111, 212, 0.15);
 }
 
 .card-header {
@@ -125,7 +125,7 @@ function toggleExpand() {
 .stat-value {
   font-weight: 700;
   font-size: 18px;
-  color: #0a5bc4;
+  color: #1a6fd4;
 }
 
 .stat-label {

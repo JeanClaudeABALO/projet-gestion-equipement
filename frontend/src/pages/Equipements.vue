@@ -533,7 +533,7 @@ onMounted(async () => {
 
 /* ADD BUTTON */
 .add-btn {
-  background: linear-gradient(135deg, #0a5bc4 0%, #09315c 100%);
+  background: linear-gradient(135deg, #1a6fd4 0%, #0f4a7a 100%);
   color: white;
   border: none;
   padding: 14px 24px;
@@ -546,7 +546,7 @@ onMounted(async () => {
   align-items: center;
   gap: 10px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(10, 91, 196, 0.3);
+  box-shadow: 0 4px 12px rgba(26, 111, 212, 0.3);
   letter-spacing: 0.3px;
   white-space: nowrap;
 }
@@ -558,7 +558,7 @@ onMounted(async () => {
 
 .add-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(10, 91, 196, 0.4);
+  box-shadow: 0 6px 16px rgba(26, 111, 212, 0.4);
 }
 
 .add-btn:active {
@@ -605,8 +605,8 @@ onMounted(async () => {
 
 .filters-row select:focus {
   outline: none;
-  border-color: #0a5bc4;
-  box-shadow: 0 0 0 3px rgba(10, 91, 196, 0.1);
+  border-color: #1a6fd4;
+  box-shadow: 0 0 0 3px rgba(26, 111, 212, 0.1);
 }
 
 .reset-btn {
@@ -669,7 +669,7 @@ onMounted(async () => {
 }
 
 .data-table thead {
-  background: linear-gradient(135deg, #0a5bc4 0%, #09315c 100%);
+  background: linear-gradient(135deg, #1a6fd4 0%, #0f4a7a 100%);
 }
 
 .data-table thead th {
@@ -829,20 +829,20 @@ onMounted(async () => {
   height: 52px;
   border-radius: 50%;
   border: none;
-  background: linear-gradient(135deg, #0a5bc4 0%, #09315c 100%);
+  background: linear-gradient(135deg, #1a6fd4 0%, #0f4a7a 100%);
   color: white;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(10, 91, 196, 0.4);
+  box-shadow: 0 4px 16px rgba(26, 111, 212, 0.4);
   transition: all 0.3s ease;
   z-index: 100;
 }
 
 .scroll-to-bottom-btn:hover {
   transform: translateY(-4px);
-  box-shadow: 0 6px 24px rgba(10, 91, 196, 0.5);
+  box-shadow: 0 6px 24px rgba(26, 111, 212, 0.5);
 }
 
 .scroll-to-bottom-btn svg {

@@ -48,7 +48,7 @@ const year = new Date().getFullYear();
 /* Bande bleue full-width - position normale (pas fixed) */
 .footer {
   width: 100%;
-  background-color: #073b75;
+  background-color: #1a5a9e;
   color: white;
   padding: 20px;
   margin-top: auto; /* pousse en bas du flex container */
@@ -111,7 +111,7 @@ const year = new Date().getFullYear();
 /* Bande dessous */
 .footer-bottom {
   width: 100%;
-  background-color: #052649;
+  background-color: #0f3d6e;
   padding: 15px 20px;
 }
 

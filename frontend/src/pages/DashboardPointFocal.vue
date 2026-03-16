@@ -769,7 +769,7 @@ onActivated(() => {
 }
 
 .subtitle strong {
-  color: #0a5bc4;
+  color: #1a6fd4;
   font-weight: 600;
 }
 
@@ -805,7 +805,7 @@ onActivated(() => {
 }
 
 .btn-export {
-  background: linear-gradient(135deg, #0a5bc4 0%, #09315c 100%);
+  background: linear-gradient(135deg, #1a6fd4 0%, #0f4a7a 100%);
   color: white;
   border: none;
   padding: 10px 20px;
@@ -815,12 +815,12 @@ onActivated(() => {
   font-weight: 600;
   font-family: 'Inter', sans-serif;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(10, 91, 196, 0.2);
+  box-shadow: 0 2px 4px rgba(26, 111, 212, 0.2);
 }
 
 .btn-export:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(10, 91, 196, 0.3);
+  box-shadow: 0 4px 8px rgba(26, 111, 212, 0.3);
 }
 
 .table {
@@ -1052,8 +1052,8 @@ onActivated(() => {
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #0a5bc4;
-  box-shadow: 0 0 0 3px rgba(10, 91, 196, 0.1);
+  border-color: #1a6fd4;
+  box-shadow: 0 0 0 3px rgba(26, 111, 212, 0.1);
 }
 
 .modal-actions {
@@ -1092,7 +1092,7 @@ onActivated(() => {
 
 .btn-confirm {
   padding: 12px 24px;
-  background: linear-gradient(135deg, #0a5bc4 0%, #09315c 100%);
+  background: linear-gradient(135deg, #1a6fd4 0%, #0f4a7a 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -1101,12 +1101,12 @@ onActivated(() => {
   font-weight: 600;
   font-family: 'Inter', sans-serif;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(10, 91, 196, 0.2);
+  box-shadow: 0 2px 4px rgba(26, 111, 212, 0.2);
 }
 
 .btn-confirm:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(10, 91, 196, 0.3);
+  box-shadow: 0 4px 8px rgba(26, 111, 212, 0.3);
 }
 
 /* Section Unités - Carrousel style large cards + chevrons */
@@ -1149,11 +1149,11 @@ onActivated(() => {
 }
 
 .unites-carousel .carousel-chevron:hover:not(:disabled) {
-  background: #0a5bc4;
+  background: #1a6fd4;
   color: white;
-  border-color: #0a5bc4;
+  border-color: #1a6fd4;
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(10, 91, 196, 0.3);
+  box-shadow: 0 4px 12px rgba(26, 111, 212, 0.3);
 }
 
 .unites-carousel .carousel-chevron:disabled {
@@ -1228,7 +1228,7 @@ onActivated(() => {
 }
 
 .unites-carousel .unite-card-header {
-  background: linear-gradient(135deg, #0a5bc4 0%, #09315c 100%);
+  background: linear-gradient(135deg, #1a6fd4 0%, #0f4a7a 100%);
   color: white;
   padding: 20px;
   display: flex;
@@ -1308,7 +1308,7 @@ onActivated(() => {
   flex-shrink: 0;
   width: 18px;
   height: 18px;
-  color: #0a5bc4;
+  color: #1a6fd4;
 }
 
 .unites-carousel .stat-row strong {
@@ -1318,7 +1318,7 @@ onActivated(() => {
 
 .unites-carousel .unite-card-footer {
   padding: 14px 16px;
-  background: linear-gradient(135deg, #0a5bc4 0%, #09315c 100%);
+  background: linear-gradient(135deg, #1a6fd4 0%, #0f4a7a 100%);
   color: white;
   border: none;
   font-size: 14px;
@@ -1331,7 +1331,7 @@ onActivated(() => {
 }
 
 .unites-carousel .unite-card-footer:hover {
-  background: linear-gradient(135deg, #09315c 0%, #062a4a 100%);
+  background: linear-gradient(135deg, #0f4a7a 0%, #062a4a 100%);
   transform: translateY(-1px);
 }
 
@@ -1524,8 +1524,8 @@ onActivated(() => {
 }
 
 .equipement-type-card:hover {
-  border-color: #0a5bc4;
-  box-shadow: 0 2px 8px rgba(10, 91, 196, 0.1);
+  border-color: #1a6fd4;
+  box-shadow: 0 2px 8px rgba(26, 111, 212, 0.1);
 }
 
 .type-header {
@@ -1692,7 +1692,7 @@ onActivated(() => {
 
 .quantite-cell {
   font-weight: 700;
-  color: #0a5bc4;
+  color: #1a6fd4;
   font-size: 16px;
 }
 
@@ -1716,7 +1716,7 @@ onActivated(() => {
   width: 24px;
   height: 24px;
   border: 3px solid #e2e8f0;
-  border-top-color: #0a5bc4;
+  border-top-color: #1a6fd4;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin-right: 12px;
@@ -1825,7 +1825,7 @@ onActivated(() => {
 }
 
 .btn-export:disabled:hover {
-  box-shadow: 0 2px 4px rgba(10, 91, 196, 0.2) !important;
+  box-shadow: 0 2px 4px rgba(26, 111, 212, 0.2) !important;
 }
 
 @media (max-width: 768px) {

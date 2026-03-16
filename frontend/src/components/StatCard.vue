@@ -86,7 +86,7 @@ function handleClick() {
 }
 
 .stat-card[style*="cursor: pointer"]:hover {
-  border-color: #0a5bc4;
+  border-color: #1a6fd4;
   background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
 }
 
@@ -139,7 +139,7 @@ function handleClick() {
 .value {
   font-size: 42px;
   font-weight: 800;
-  color: #0b4f83;
+  color: #1a6fd4;
   line-height: 1.2;
   font-family: 'Inter', 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
   letter-spacing: -1px;
@@ -168,7 +168,7 @@ function handleClick() {
 
 .stat-card:hover .click-hint {
   opacity: 1;
-  color: #0a5bc4;
+  color: #1a6fd4;
   transform: translateY(-2px);
 }
 

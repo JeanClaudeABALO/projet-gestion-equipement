@@ -97,13 +97,13 @@ function toggleUnit(unitId) {
 
 .unit-item:hover {
   background: #edf2f7;
-  border-color: #0a5bc4;
+  border-color: #1a6fd4;
 }
 
 .unit-item.is-expanded {
   background: white;
-  border-color: #0a5bc4;
-  box-shadow: 0 2px 8px rgba(10, 91, 196, 0.1);
+  border-color: #1a6fd4;
+  box-shadow: 0 2px 8px rgba(26, 111, 212, 0.1);
 }
 
 .unit-header {

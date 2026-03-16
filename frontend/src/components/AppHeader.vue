@@ -6,8 +6,9 @@ const router = useRouter();
 const route = useRoute();
 
 // Injecter l'état de la sidebar
-const sidebarOpen = inject('sidebarOpen', ref(true));
-const toggleSidebar = inject('toggleSidebar', () => {});
+const sidebarOpen = inject("sidebarOpen", ref(true));
+const toggleSidebar = inject("toggleSidebar", () => {});
+const isMobile = inject("isMobile", ref(false));
 
 // État réactif pour l'authentification et le rôle
 const isAuthenticated = ref(!!localStorage.getItem("token"));
@@ -108,7 +109,7 @@ function goToPlatform() {
 </script>
 
 <template>
-  <header class="app-header" role="banner">
+  <header class="app-header" :class="{ 'has-sidebar-toggle': isAuthenticated && isMobile }" role="banner">
     <div class="app-header__inner">
       <!-- Texte institutionnel à gauche -->
       <div class="left">
@@ -189,7 +190,7 @@ function goToPlatform() {
   left: 0;
   right: 0;
   z-index: 9999;
-  background: linear-gradient(135deg,#1ca492  10%, #0a5bc4 50%, #0d7a3d 100%);
+  background: linear-gradient(135deg,#1ca492  10%, #1a6fd4 50%, #0d7a3d 100%);
   border-bottom: 3px solid #f1c40f;
 }
 
@@ -203,7 +204,7 @@ function goToPlatform() {
   justify-content: center;
   width: 44px;
   height: 44px;
-  background: rgba(7, 59, 117, 0.95);
+  background: rgba(26, 90, 158, 0.95);
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 8px;
   color: white;
@@ -215,7 +216,7 @@ function goToPlatform() {
 }
 
 .sidebar-toggle-btn-fixed:hover {
-  background: rgba(7, 59, 117, 1);
+  background: rgba(26, 90, 158, 1);
   border-color: rgba(255, 255, 255, 0.5);
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -355,7 +356,7 @@ function goToPlatform() {
 }
 
 .btn-primary {
-  background: #0a5bc4;
+  background: #1a6fd4;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -397,7 +398,7 @@ function goToPlatform() {
   align-items: center;
   gap: 8px;
   padding: 8px 14px;
-  background: #0a5bc4 !important;
+  background: #1a6fd4 !important;
   color: white !important;
   border: none;
   border-radius: 6px;
@@ -505,6 +506,11 @@ function goToPlatform() {
     height: 40px;
     font-size: 20px;
   }
+  
+  /* Espace pour le bouton hamburger quand connecté sur mobile */
+  .app-header.has-sidebar-toggle .app-header__inner {
+    padding-left: 54px;
+  }
 }
 
 /* Très petits écrans */
@@ -513,6 +519,10 @@ function goToPlatform() {
     height: auto;
     min-height: 70px;
     padding: 10px 10px 12px;
+  }
+  
+  .app-header.has-sidebar-toggle .app-header__inner {
+    padding-left: 54px;
   }
   
   .ministry-title {

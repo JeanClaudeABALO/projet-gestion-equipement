@@ -148,7 +148,7 @@ function formatDate(date) {
 .quantity {
   text-align: center;
   font-weight: 600;
-  color: #0a5bc4;
+  color: #1a6fd4;
 }
 
 .date {

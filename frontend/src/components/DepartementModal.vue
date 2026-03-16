@@ -102,7 +102,7 @@ input {
 }
 
 .primary {
-  background: #0a5bc4;
+  background: #1a6fd4;
   color: white;
   border: none;
   padding: 6px 12px;

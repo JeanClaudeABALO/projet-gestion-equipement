@@ -227,7 +227,7 @@ onMounted(() => {
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.2em;
-  color: #0a5bc4;
+  color: #1a6fd4;
   text-transform: uppercase;
   margin-bottom: 14px;
 }
@@ -351,7 +351,7 @@ onMounted(() => {
 
 .stat-percentage {
   font-size: 16px;
-  color: #0a5bc4;
+  color: #1a6fd4;
   margin-top: 8px;
   font-weight: 600;
 }

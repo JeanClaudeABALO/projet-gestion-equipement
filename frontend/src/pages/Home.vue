@@ -412,7 +412,7 @@ watch(() => route.path, (newPath) => {
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(7, 59, 117, 0.4) 0%, rgba(10, 91, 196, 0.3) 100%);
+  background: linear-gradient(135deg, rgba(7, 59, 117, 0.4) 0%, rgba(26, 111, 212, 0.3) 100%);
   z-index: 1;
 }
 
@@ -538,7 +538,7 @@ watch(() => route.path, (newPath) => {
 .btn-primary-large {
   padding: 16px 40px;
   font-size: 18px;
-  background: #0a5bc4;
+  background: #1a6fd4;
   color: white;
   border: none;
   border-radius: 8px;
@@ -622,7 +622,7 @@ watch(() => route.path, (newPath) => {
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.2em;
-  color: #0a5bc4;
+  color: #1a6fd4;
   text-transform: uppercase;
   margin-bottom: 14px;
 }
@@ -749,7 +749,7 @@ watch(() => route.path, (newPath) => {
 
 /* SECTION STATS - ancien format (fond bleu, cartes translucides) */
 .stats-section {
-  background: linear-gradient(135deg, #073b75 0%, #0a5bc4 100%);
+  background: linear-gradient(135deg, #1a5a9e 0%, #1a6fd4 100%);
   color: white;
 }
 

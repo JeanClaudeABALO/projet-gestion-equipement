@@ -275,7 +275,7 @@ export default {
 .card-title {
   font-size: 26px;
   font-weight: 700;
-  color: #073b75;
+  color: #1a5a9e;
   margin: 0 0 6px 0;
 }
 
@@ -325,8 +325,8 @@ export default {
 
 .form-input:focus {
   outline: none;
-  border-color: #073b75;
-  box-shadow: 0 0 0 3px rgba(7, 59, 117, 0.1);
+  border-color: #1a5a9e;
+  box-shadow: 0 0 0 3px rgba(26, 90, 158, 0.1);
 }
 
 .form-input.error {
@@ -366,7 +366,7 @@ export default {
 
 .password-toggle:hover {
   background: #f7fafc;
-  color: #073b75;
+  color: #1a5a9e;
 }
 
 .password-toggle .icon {
@@ -394,7 +394,7 @@ export default {
 .submit-button {
   width: 100%;
   padding: 16px;
-  background: #073b75;
+  background: #1a5a9e;
   color: white;
   border: none;
   border-radius: 10px;
@@ -402,7 +402,7 @@ export default {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(7, 59, 117, 0.3);
+  box-shadow: 0 4px 12px rgba(26, 90, 158, 0.3);
   margin-top: 8px;
   display: flex;
   align-items: center;
@@ -411,9 +411,9 @@ export default {
 }
 
 .submit-button:hover:not(:disabled) {
-  background: #052649;
+  background: #0f3d6e;
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(7, 59, 117, 0.4);
+  box-shadow: 0 6px 18px rgba(26, 90, 158, 0.4);
 }
 
 .submit-button:disabled {

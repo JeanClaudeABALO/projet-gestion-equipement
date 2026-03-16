@@ -1,4 +1,11 @@
 <template>
+  <!-- Overlay mobile : clic ferme la sidebar -->
+  <div
+    v-if="sidebarOpen && isMobile"
+    class="sidebar-overlay"
+    @click="toggleSidebar"
+    aria-hidden="true"
+  ></div>
   <aside class="sidebar" :class="{ 'sidebar-collapsed': !sidebarOpen }">
     <div class="sidebar-header">
       <h2>Administration</h2>
@@ -6,7 +13,7 @@
 
     <nav class="menu">
       <ul>
-        <li class="menu-item" @click="go('/dashboard/admin')">
+        <li class="menu-item" @click="goAndClose('/dashboard/admin')">
           <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
             <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -22,7 +29,7 @@
           <span class="label">Départements</span>
         </li>
 
-        <li class="menu-item" @click="go('/unites')">
+        <li class="menu-item" @click="goAndClose('/unites')">
           <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 21h18"></path>
             <path d="M5 21V7l8-4v18"></path>
@@ -35,7 +42,7 @@
           <span class="label">Unités</span>
         </li>
 
-        <li class="menu-item" @click="go('/equipements')">
+        <li class="menu-item" @click="goAndClose('/equipements')">
           <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
             <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
@@ -44,7 +51,7 @@
           <span class="label">Équipements</span>
         </li>
 
-        <li class="menu-item" @click="go('/utilisateurs')">
+        <li class="menu-item" @click="goAndClose('/utilisateurs')">
           <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
             <circle cx="9" cy="7" r="4"></circle>
@@ -54,7 +61,7 @@
           <span class="label">Utilisateurs</span>
         </li>
 
-        <li class="menu-item" @click="go('/reparations')">
+        <li class="menu-item" @click="goAndClose('/reparations')">
           <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
           </svg>
@@ -64,7 +71,7 @@
     </nav>
 
     <div class="sidebar-actions">
-      <button @click="goBack" class="action-btn back-btn">
+      <button @click="goBackAndClose" class="action-btn back-btn">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="15 18 9 12 15 6"></polyline>
         </svg>
@@ -94,8 +101,9 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 // Injecter l'état de la sidebar
-const sidebarOpen = inject('sidebarOpen', ref(true));
-const toggleSidebar = inject('toggleSidebar', () => {});
+const sidebarOpen = inject("sidebarOpen", ref(true));
+const toggleSidebar = inject("toggleSidebar", () => {});
+const isMobile = inject("isMobile", ref(false));
 
 // Récupérer le rôle de l'utilisateur
 const userRole = ref(localStorage.getItem("role"));
@@ -105,8 +113,18 @@ function go(path) {
   router.push(path);
 }
 
+function goAndClose(path) {
+  router.push(path);
+  if (isMobile.value) toggleSidebar();
+}
+
 function goBack() {
   router.go(-1);
+}
+
+function goBackAndClose() {
+  router.go(-1);
+  if (isMobile.value) toggleSidebar();
 }
 
 function logout() {
@@ -131,7 +149,7 @@ function logout() {
   left: 0;
   width: 220px;
   height: 100vh;
-  background: linear-gradient(180deg, #0a5bc4 0%, #073b75 100%);
+  background: linear-gradient(180deg, #1a6fd4 0%, #1a5a9e 100%);
   color: white;
   display: flex;
   flex-direction: column;
@@ -145,11 +163,27 @@ function logout() {
   transform: translateX(-100%);
 }
 
-/* Mobile : sidebar en overlay */
+/* Overlay mobile : fond semi-transparent */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Mobile : sidebar en overlay, masquée par défaut */
 @media (max-width: 768px) {
   .sidebar {
-    width: 260px;
+    width: 280px;
+    max-width: 85vw;
     box-shadow: 8px 0 30px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
   }
   
   .sidebar-collapsed {

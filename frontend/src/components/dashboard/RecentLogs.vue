@@ -122,7 +122,7 @@ function getEtatClass(etat) {
   padding: 12px;
   background: #f7fafc;
   border-radius: 8px;
-  border-left: 3px solid #0a5bc4;
+  border-left: 3px solid #1a6fd4;
   transition: all 0.2s;
 }
 
@@ -167,7 +167,7 @@ function getEtatClass(etat) {
 }
 
 .arrow {
-  color: #0a5bc4;
+  color: #1a6fd4;
   font-weight: bold;
 }
 

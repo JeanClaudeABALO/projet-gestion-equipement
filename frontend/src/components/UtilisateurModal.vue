@@ -270,8 +270,8 @@ select {
 input:focus,
 select:focus {
   outline: none;
-  border-color: #0a5bc4;
-  box-shadow: 0 0 0 3px rgba(10, 91, 196, 0.1);
+  border-color: #1a6fd4;
+  box-shadow: 0 0 0 3px rgba(26, 111, 212, 0.1);
 }
 
 input::placeholder {
@@ -335,7 +335,7 @@ input::placeholder {
 }
 
 .primary {
-  background: linear-gradient(135deg, #0a5bc4 0%, #09315c 100%);
+  background: linear-gradient(135deg, #1a6fd4 0%, #0f4a7a 100%);
   color: white;
   border: none;
   padding: 12px 24px;
@@ -345,12 +345,12 @@ input::placeholder {
   font-weight: 600;
   font-family: 'Inter', sans-serif;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(10, 91, 196, 0.2);
+  box-shadow: 0 2px 4px rgba(26, 111, 212, 0.2);
 }
 
 .primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(10, 91, 196, 0.3);
+  box-shadow: 0 4px 8px rgba(26, 111, 212, 0.3);
 }
 
 .slide-down-enter-active {

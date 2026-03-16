@@ -660,11 +660,11 @@ onMounted(() => {
 }
 
 .carousel-chevron:hover:not(:disabled) {
-  background: #0a5bc4;
+  background: #1a6fd4;
   color: white;
-  border-color: #0a5bc4;
+  border-color: #1a6fd4;
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(10, 91, 196, 0.3);
+  box-shadow: 0 4px 12px rgba(26, 111, 212, 0.3);
 }
 
 .carousel-chevron:disabled {
@@ -738,7 +738,7 @@ onMounted(() => {
 }
 
 .departement-card-header {
-  background: linear-gradient(135deg, #0a5bc4 0%, #09315c 100%);
+  background: linear-gradient(135deg, #1a6fd4 0%, #0f4a7a 100%);
   color: white;
   padding: 20px;
   display: flex;
@@ -818,7 +818,7 @@ onMounted(() => {
   flex-shrink: 0;
   width: 18px;
   height: 18px;
-  color: #0a5bc4;
+  color: #1a6fd4;
 }
 
 .stat-row strong {
@@ -848,20 +848,20 @@ onMounted(() => {
 }
 
 .footer-btn.primary {
-  background: linear-gradient(135deg, #0a5bc4 0%, #09315c 100%);
+  background: linear-gradient(135deg, #1a6fd4 0%, #0f4a7a 100%);
   color: white;
-  box-shadow: 0 2px 8px rgba(10, 91, 196, 0.3);
+  box-shadow: 0 2px 8px rgba(26, 111, 212, 0.3);
 }
 
 .footer-btn.primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(10, 91, 196, 0.4);
+  box-shadow: 0 4px 12px rgba(26, 111, 212, 0.4);
 }
 
 .footer-btn.secondary {
   background: white;
-  color: #0a5bc4;
-  border: 2px solid #0a5bc4;
+  color: #1a6fd4;
+  border: 2px solid #1a6fd4;
 }
 
 .footer-btn.secondary:hover {
@@ -1020,8 +1020,8 @@ onMounted(() => {
 }
 
 .equipement-item:hover {
-  border-color: #0a5bc4;
-  box-shadow: 0 2px 8px rgba(10, 91, 196, 0.1);
+  border-color: #1a6fd4;
+  box-shadow: 0 2px 8px rgba(26, 111, 212, 0.1);
 }
 
 .equipement-header {
@@ -1163,7 +1163,7 @@ onMounted(() => {
 
 .unite-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: #0a5bc4;
+  border-color: #1a6fd4;
 }
 
 .unite-card-header {
@@ -1287,8 +1287,8 @@ onMounted(() => {
 }
 
 .equipement-type-card:hover {
-  border-color: #0a5bc4;
-  box-shadow: 0 2px 8px rgba(10, 91, 196, 0.1);
+  border-color: #1a6fd4;
+  box-shadow: 0 2px 8px rgba(26, 111, 212, 0.1);
 }
 
 .type-header {

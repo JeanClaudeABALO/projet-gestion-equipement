@@ -204,7 +204,7 @@ export default {
 .login-panel-left {
   flex: 1;
   min-width: 280px;
-  background: linear-gradient(135deg, #052649 0%, #073b75 50%, #0a5bc4 100%);
+  background: linear-gradient(135deg, #0f3d6e 0%, #1a5a9e 50%, #1a6fd4 100%);
   position: relative;
   display: flex;
   align-items: center;
@@ -218,7 +218,7 @@ export default {
   right: -15%;
   width: 50%;
   height: 140%;
-  background: linear-gradient(135deg, #073b75 0%, #0a5bc4 100%);
+  background: linear-gradient(135deg, #1a5a9e 0%, #1a6fd4 100%);
   border-radius: 50%;
   opacity: 0.4;
 }
@@ -309,9 +309,9 @@ export default {
 
 .form-input:focus {
   outline: none;
-  border-color: #073b75;
+  border-color: #1a5a9e;
   background: white;
-  box-shadow: 0 0 0 3px rgba(7, 59, 117, 0.1);
+  box-shadow: 0 0 0 3px rgba(26, 90, 158, 0.1);
 }
 
 .form-input::placeholder {
@@ -340,7 +340,7 @@ export default {
 }
 
 .password-toggle:hover {
-  color: #073b75;
+  color: #1a5a9e;
 }
 
 .password-toggle .icon {
@@ -360,7 +360,7 @@ export default {
 .sign-up-btn {
   width: 100%;
   padding: 16px;
-  background: linear-gradient(135deg, #073b75 0%, #052649 100%);
+  background: linear-gradient(135deg, #1a5a9e 0%, #0f3d6e 100%);
   color: white;
   border: none;
   border-radius: 12px;
@@ -372,9 +372,9 @@ export default {
 }
 
 .sign-up-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #052649 0%, #031d3a 100%);
+  background: linear-gradient(135deg, #0f3d6e 0%, #0f2d52 100%);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(7, 59, 117, 0.35);
+  box-shadow: 0 8px 24px rgba(26, 90, 158, 0.35);
 }
 
 .sign-up-btn:disabled {
@@ -401,11 +401,11 @@ export default {
 }
 
 .help-link:hover {
-  color: #073b75;
+  color: #1a5a9e;
 }
 
 .login-footer {
-  background: #052649;
+  background: #0f3d6e;
   color: rgba(255, 255, 255, 0.8);
   text-align: center;
   padding: 20px;

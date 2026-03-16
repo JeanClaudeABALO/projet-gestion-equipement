@@ -259,7 +259,7 @@ function goToPlatform() {
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.2em;
-  color: #0a5bc4;
+  color: #1a6fd4;
   text-transform: uppercase;
   margin-bottom: 14px;
 }
@@ -390,7 +390,7 @@ function goToPlatform() {
 .btn-primary-large {
   padding: 16px 40px;
   font-size: 18px;
-  background: #0a5bc4;
+  background: #1a6fd4;
   color: white;
   border: none;
   border-radius: 8px;
