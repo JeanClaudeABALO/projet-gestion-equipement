@@ -1,5 +1,4 @@
 <template>
-  <!-- Overlay mobile : clic ferme la sidebar -->
   <div
     v-if="sidebarOpen && isMobile"
     class="sidebar-overlay"
@@ -21,7 +20,7 @@
           <span class="label">Tableau de bord</span>
         </li>
 
-        <li class="menu-item" @click="go('/departements')">
+        <li class="menu-item" @click="goAndClose('/departements')">
           <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
             <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -77,7 +76,7 @@
         </svg>
         <span class="label">Retour</span>
       </button>
-      
+
       <button @click="logout" class="action-btn logout-btn">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -95,232 +94,15 @@
 </template>
 
 <script setup>
-import { inject, ref, computed } from "vue";
-import { useRouter } from "vue-router";
+import { useSidebarAdmin } from "../scripts/SidebarAdmin.js";
 
-const router = useRouter();
-
-// Injecter l'état de la sidebar
-const sidebarOpen = inject("sidebarOpen", ref(true));
-const toggleSidebar = inject("toggleSidebar", () => {});
-const isMobile = inject("isMobile", ref(false));
-
-// Récupérer le rôle de l'utilisateur
-const userRole = ref(localStorage.getItem("role"));
-const isSuperAdmin = computed(() => userRole.value === "super_admin");
-
-function go(path) {
-  router.push(path);
-}
-
-function goAndClose(path) {
-  router.push(path);
-  if (isMobile.value) toggleSidebar();
-}
-
-function goBack() {
-  router.go(-1);
-}
-
-function goBackAndClose() {
-  router.go(-1);
-  if (isMobile.value) toggleSidebar();
-}
-
-function logout() {
-  if (confirm("Êtes-vous sûr de vouloir vous déconnecter ?")) {
-    // Supprimer les données du localStorage immédiatement
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    
-    // Déclencher un événement personnalisé pour notifier les autres composants
-    window.dispatchEvent(new Event('storage'));
-    
-    // Utiliser le router Vue pour une redirection instantanée
-    router.replace("/");
-  }
-}
+const {
+  sidebarOpen,
+  toggleSidebar,
+  isMobile,
+  goAndClose,
+  goBackAndClose,
+  logout
+} = useSidebarAdmin();
 </script>
-
-<style scoped>
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 220px;
-  height: 100vh;
-  background: linear-gradient(180deg, #1a6fd4 0%, #1a5a9e 100%);
-  color: white;
-  display: flex;
-  flex-direction: column;
-  z-index: 1000;
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
-  font-family: 'Inter', 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
-  transition: transform 0.3s ease;
-}
-
-.sidebar-collapsed {
-  transform: translateX(-100%);
-}
-
-/* Overlay mobile : fond semi-transparent */
-.sidebar-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
-  animation: fadeIn 0.2s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* Mobile : sidebar en overlay, masquée par défaut */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 280px;
-    max-width: 85vw;
-    box-shadow: 8px 0 30px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-  }
-  
-  .sidebar-collapsed {
-    transform: translateX(-100%);
-  }
-}
-
-/* Header */
-.sidebar-header {
-  padding: 24px 20px;
-  text-align: center;
-  font-weight: 700;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.sidebar-header h2 {
-  margin: 0;
-  font-size: 20px;
-  letter-spacing: 0.5px;
-  font-weight: 700;
-}
-
-/* Menu */
-.menu {
-  flex: 1;
-  padding: 16px 0;
-  overflow-y: auto;
-}
-
-.menu ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.menu-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin: 4px 12px;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 500;
-}
-
-.menu-item:hover {
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateX(4px);
-}
-
-.menu-item.active {
-  background: rgba(255, 255, 255, 0.2);
-  border-left: 4px solid #fbbf24;
-}
-
-.menu-item .icon {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-}
-
-.menu-item .label {
-  font-size: 15px;
-  font-weight: 500;
-}
-
-/* Sidebar Actions */
-.sidebar-actions {
-  padding: 16px 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  background: rgba(0, 0, 0, 0.1);
-}
-
-.action-btn {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 15px;
-  font-weight: 600;
-  font-family: inherit;
-  width: 100%;
-  justify-content: flex-start;
-}
-
-.back-btn {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.back-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateX(-2px);
-}
-
-.logout-btn {
-  background: rgba(220, 38, 38, 0.2);
-  color: #fecaca;
-  border: 1px solid rgba(220, 38, 38, 0.3);
-}
-
-.logout-btn:hover {
-  background: rgba(220, 38, 38, 0.3);
-  color: white;
-  transform: translateX(-2px);
-}
-
-.action-btn .icon {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-}
-
-.action-btn .label {
-  font-size: 15px;
-  font-weight: 600;
-}
-
-/* Footer */
-.sidebar-footer {
-  padding: 16px;
-  font-size: 11px;
-  text-align: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-  color: rgba(255, 255, 255, 0.7);
-  background: rgba(0, 0, 0, 0.1);
-}
-</style>
+<style scoped src="../styles/SidebarAdmin.css"></style>
