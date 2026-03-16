@@ -1,38 +1,42 @@
 <template>
   <footer class="footer">
-
     <!-- Bande bleu foncé -->
     <div class="footer-inner">
       <div class="footer-column">
-        <h3>Plateforme des Équipements</h3>
-        <p>
-          Système national de gestion et suivi des équipements médicaux du Bénin.
+        <h3>Centre de Documentation</h3>
+        <p>de Sécurité Publique</p>
+        <p class="footer-subtitle">
+          République du Bénin
         </p>
       </div>
 
       <div class="footer-column">
-        <h3>Liens</h3>
-        <ul>
-          <li @click="$router.push('/')">Accueil</li>
-          <li @click="$router.push('/equipements')">Équipements</li>
-          <li @click="$router.push('/departements')">Par département</li>
-          <li @click="$router.push('/unites')">Par unité</li>
-        </ul>
+        <h3>Contact</h3>
+        <p>Email : contact@cdsp.bj</p>
+        <p>Tél : 01 51 53 30 81</p>
+        <p>Site : www.cdsp.com</p>
       </div>
 
       <div class="footer-column">
-        <h3>Contact</h3>
-        <p>Ministère de la Santé</p>
-        <p>Email : support@ms.bj</p>
-        <p>Tél : +229 21 00 00 00</p>
+        <h3>Liens utiles</h3>
+        <ul>
+          <li @click="$router.push('/')">Accueil</li>
+          <li @click="$router.push('/la-plateforme')">La Plateforme</li>
+          <li @click="$router.push('/statistiques')">Statistiques</li>
+          <li @click="$router.push('/contact')">Contact</li>
+        </ul>
       </div>
     </div>
 
     <!-- Bande du bas -->
     <div class="footer-bottom">
-      © {{ year }} République du Bénin — Tous droits réservés
+      <div class="footer-bottom-content">
+        <p>© {{ year }} Ministère de la Justice — République du Bénin — Tous droits réservés</p>
+        <p class="footer-legal">
+          <span @click="$router.push('/contact')" class="footer-link">Mentions légales</span>
+        </p>
+      </div>
     </div>
-
   </footer>
 </template>
 
@@ -82,6 +86,12 @@ const year = new Date().getFullYear();
   line-height: 1.4;
 }
 
+.footer-subtitle {
+  font-size: 13px;
+  opacity: 0.8;
+  margin-top: 5px;
+}
+
 .footer-column ul {
   list-style: none;
   padding: 0;
@@ -101,9 +111,40 @@ const year = new Date().getFullYear();
 .footer-bottom {
   width: 100%;
   background-color: #052649;
-  text-align: center;
-  padding: 10px;
+  padding: 15px 20px;
+}
+
+.footer-bottom-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
   font-size: 13px;
   opacity: 0.9;
+  text-align: center;
+}
+
+.footer-legal {
+  margin: 0;
+}
+
+.footer-link {
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+  color: #f1c40f;
+}
+
+@media (max-width: 768px) {
+  .footer-bottom-content {
+    flex-direction: column;
+    text-align: center;
+  }
 }
 </style>

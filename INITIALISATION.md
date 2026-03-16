@@ -13,7 +13,7 @@ Le système nécessite **un seul administrateur principal** qui est créé au d�
    ```env
    DB_HOST=localhost
    DB_USER=root
-   DB_PASS=votre_mot_de_passe
+   DB_PASSWORD=votre_mot_de_passe
    DB_NAME=gestion_equipement
    JWT_SECRET=votre_secret_jwt_tres_securise
    

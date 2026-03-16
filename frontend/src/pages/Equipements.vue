@@ -1,15 +1,22 @@
 <template>
   <div class="equipements-page">
-    <!-- HEADER -->
-    <div class="header-bar">
-      <h1>Gestion des Équipements</h1>
-      <button class="add-btn" @click="openAdd">
-        <span>＋</span> Ajouter un équipement
-      </button>
-    </div>
+    <SidebarAdmin v-if="role === 'admin' || role === 'super_admin'" />
+    <SidebarPointFocal v-else />
+
+    <div class="content-wrapper">
+      <!-- HEADER -->
+      <div class="header-bar">
+        <div class="header-content">
+          <h1>Gestion des Équipements</h1>
+          <p class="subtitle">Gérez les équipements de votre organisation</p>
+        </div>
+        <button class="add-btn" @click="openAdd">
+          <span>＋</span> Ajouter un équipement
+        </button>
+      </div>
 
     <!-- FILTRES -->
-    <div class="filters-card">
+    <div v-if="role === 'admin' || role === 'super_admin'" class="filters-card">
       <h3>Filtres</h3>
       <div class="filters-row">
         <select v-model="filters.departement_id" @change="loadData">
@@ -47,26 +54,80 @@
       </div>
     </div>
 
-    <!-- TABLE CARD -->
-    <div class="table-card">
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Département</th>
-            <th>Unité</th>
-            <th>Type</th>
-            <th>Quantité</th>
-            <th>État</th>
-            <th>Commentaire</th>
-            <th>Dernière MAJ</th>
-            <th class="center">Actions</th>
-          </tr>
-        </thead>
+    <!-- FILTRES POINT FOCAL (sans département) -->
+    <div v-else class="filters-card">
+      <h3>Filtres</h3>
+      <div class="filters-row">
+        <select v-model="filters.unite_id" @change="loadData">
+          <option value="">Toutes les unités</option>
+          <option
+            v-for="u in unitesFiltrees"
+            :key="u.id"
+            :value="u.id"
+          >
+            {{ u.nom }}
+          </option>
+        </select>
 
-        <tbody>
-          <tr v-for="e in equipementsFiltres" :key="e.id">
-            <td>{{ e.id }}</td>
+        <select v-model="filters.etat" @change="loadData">
+          <option value="">Tous les états</option>
+          <option value="fonctionnel">Fonctionnel</option>
+          <option value="non_fonctionnel">Non fonctionnel</option>
+          <option value="reparation">En réparation</option>
+          <option value="manquant">Manquant</option>
+          <option value="vetuste">Vétuste</option>
+        </select>
+
+        <button class="reset-btn" @click="resetFilters">Réinitialiser</button>
+      </div>
+    </div>
+
+    <!-- TABLE CARD - Structure à 2 tables : header fixe + body scrollable -->
+    <div class="table-card-wrapper">
+      <div class="table-header-fixed" ref="headerScrollRef">
+        <table class="data-table">
+          <colgroup>
+            <col style="width: 50px">
+            <col style="width: 12%">
+            <col style="width: 12%">
+            <col style="width: 10%">
+            <col style="width: 70px">
+            <col style="width: 10%">
+            <col style="width: 15%">
+            <col style="width: 12%">
+            <col style="width: 100px">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>N°</th>
+              <th>Département</th>
+              <th>Unité</th>
+              <th>Type</th>
+              <th>Quantité</th>
+              <th>État</th>
+              <th>Commentaire</th>
+              <th>Dernière MAJ</th>
+              <th class="center">Actions</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+      <div class="table-body-scroll" ref="tableCardRef" @scroll="onTableScroll" @scrollend="updateScrollPosition">
+        <table class="data-table">
+          <colgroup>
+            <col style="width: 50px">
+            <col style="width: 12%">
+            <col style="width: 12%">
+            <col style="width: 10%">
+            <col style="width: 70px">
+            <col style="width: 10%">
+            <col style="width: 15%">
+            <col style="width: 12%">
+            <col style="width: 100px">
+          </colgroup>
+          <tbody>
+          <tr v-for="(e, index) in sortedEquipements" :key="e.id">
+            <td>{{ index + 1 }}</td>
             <td class="bold">{{ e.departement_nom }}</td>
             <td>{{ e.unite_nom }}</td>
             <td>{{ e.type_nom }}</td>
@@ -79,37 +140,77 @@
             <td class="comment">{{ e.commentaire || "-" }}</td>
             <td class="date">{{ formatDate(e.date_maj) }}</td>
             <td class="center">
-              <button class="action edit" @click="openEdit(e)">✏️</button>
-              <button class="action delete" @click="remove(e.id)">🗑</button>
+              <div class="actions-container">
+                <button class="action edit" @click="openEdit(e)" title="Modifier">
+                  <svg class="action-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </button>
+                <button class="action delete" @click="remove(e.id)" title="Supprimer">
+                  <svg class="action-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                  </svg>
+                </button>
+              </div>
             </td>
           </tr>
 
-          <tr v-if="equipementsFiltres.length === 0">
+          <tr v-if="sortedEquipements.length === 0">
             <td colspan="9" class="empty">Aucun équipement trouvé</td>
           </tr>
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
 
-    <!-- MODAL -->
-    <EquipementModal
-      v-if="showModal"
-      :modelValue="selected"
-      :unites="unites"
-      :types="types"
-      @close="showModal = false"
-      @save="saveEquipement"
-    />
+      <!-- FLÈCHE BAS / HAUT -->
+      <button
+        v-if="sortedEquipements.length > 5"
+        class="scroll-to-bottom-btn"
+        @click="isAtBottom ? scrollToTop() : scrollToBottom()"
+        :title="isAtBottom ? 'Remonter en haut' : 'Aller en bas de la liste'"
+      >
+        <svg v-if="!isAtBottom" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <polyline points="19 12 12 19 5 12"></polyline>
+        </svg>
+        <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="19" x2="12" y2="5"></line>
+          <polyline points="5 12 12 5 19 12"></polyline>
+        </svg>
+      </button>
+
+      <!-- MODAL -->
+      <EquipementModal
+        v-if="showModal"
+        :modelValue="selected"
+        :unites="unitesFiltreesPourModal"
+        :types="types"
+        :isPointFocal="role === 'pf'"
+        @close="showModal = false"
+        @save="saveEquipement"
+        @type-added="handleTypeAdded"
+      />
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, nextTick, watch } from "vue";
 import equipementApi from "../api/equipement";
 import departementsApi from "../api/departement";
 import unitesApi from "../api/unites";
 import typesApi from "../api/equipementsTypes";
 import EquipementModal from "../components/EquipementModal.vue";
+import SidebarAdmin from "../components/SidebarAdmin.vue";
+import SidebarPointFocal from "../components/SidebarPointFocal.vue";
+import api from "../api/axios";
+
+const role = ref(localStorage.getItem("role") || "admin");
 
 const equipements = ref([]);
 const departements = ref([]);
@@ -117,6 +218,7 @@ const unites = ref([]);
 const types = ref([]);
 const showModal = ref(false);
 const selected = ref(null);
+const userDepartementId = ref(null);
 
 const filters = ref({
   departement_id: "",
@@ -124,19 +226,33 @@ const filters = ref({
   etat: ""
 });
 
-// Unités filtrées selon le département sélectionné
+// Unités filtrées selon le département sélectionné (pour les filtres)
 const unitesFiltrees = computed(() => {
+  if (role.value === "pf") {
+    // Pour le point focal, le backend filtre déjà par département
+    // On retourne directement toutes les unités (déjà filtrées par le backend)
+    return unites.value;
+  }
+  // Pour l'admin, filtrer par le département sélectionné dans les filtres
   if (!filters.value.departement_id) {
     return unites.value;
   }
   return unites.value.filter(u => u.departement_id == filters.value.departement_id);
 });
 
+// Unités filtrées pour le modal (uniquement celles du département du point focal)
+const unitesFiltreesPourModal = computed(() => {
+  // Le backend filtre déjà les unités par département pour les points focaux
+  // On retourne directement toutes les unités (déjà filtrées)
+  return unites.value;
+});
+
 // Équipements filtrés
 const equipementsFiltres = computed(() => {
   let result = equipements.value;
 
-  if (filters.value.departement_id) {
+  // Pour l'admin ou super_admin, filtrer par département si sélectionné
+  if ((role.value === "admin" || role.value === "super_admin") && filters.value.departement_id) {
     result = result.filter(e => e.departement_id == filters.value.departement_id);
   }
 
@@ -151,17 +267,38 @@ const equipementsFiltres = computed(() => {
   return result;
 });
 
-async function loadData() {
-  const role = localStorage.getItem("role");
+// Équipements triés par ordre alphabétique (département > unité > type)
+const sortedEquipements = computed(() => {
+  return [...equipementsFiltres.value].sort((a, b) => {
+    const cmpDep = (a.departement_nom || "").localeCompare(b.departement_nom || "", "fr");
+    if (cmpDep !== 0) return cmpDep;
+    const cmpUnit = (a.unite_nom || "").localeCompare(b.unite_nom || "", "fr");
+    if (cmpUnit !== 0) return cmpUnit;
+    return (a.type_nom || "").localeCompare(b.type_nom || "", "fr");
+  });
+});
 
+async function loadData() {
   // 1) Charger la liste des équipements selon le rôle
   try {
     let e;
-    if (role === "admin") {
+    if (role.value === "admin" || role.value === "super_admin") {
       e = await equipementApi.getAll();
-    } else if (role === "pf") {
+    } else if (role.value === "pf") {
       // PF : uniquement les équipements de son département
       e = await equipementApi.getByDepartement();
+      // Récupérer l'ID du département pour référence (si nécessaire)
+      if (e?.data && e.data.length > 0) {
+        userDepartementId.value = e.data[0].departement_id;
+      } else {
+        // Si pas d'équipements, récupérer depuis le dashboard
+        try {
+          const dashboardRes = await api.get("/dashboard/point-focal");
+          userDepartementId.value = dashboardRes.data.departement_id;
+        } catch (err) {
+          console.error("Erreur récupération département:", err);
+        }
+      }
     }
 
     equipements.value = e?.data || [];
@@ -174,16 +311,29 @@ async function loadData() {
   }
 
   // 2) Charger toujours les listes nécessaires au modal (accessibles PF + ADMIN)
+  // Le backend filtre automatiquement les unités par département pour les points focaux
   try {
-    const [d, u, t] = await Promise.all([
-      departementsApi.getAll(),
-      unitesApi.getAll(),
-      typesApi.getAll(),
-    ]);
-
-    departements.value = d.data || [];
-    unites.value = u.data || [];
-    types.value = t.data || [];
+    const promises = [typesApi.getAll()];
+    
+    if (role.value === "admin" || role.value === "super_admin") {
+      promises.push(departementsApi.getAll());
+    }
+    
+    promises.push(unitesApi.getAll());
+    
+    const results = await Promise.all(promises);
+    
+    if (role.value === "admin" || role.value === "super_admin") {
+      // Ordre des promesses : types (0), departements (1), unites (2)
+      types.value = results[0].data || [];
+      departements.value = results[1].data || [];
+      unites.value = results[2].data || [];
+    } else {
+      // Pour le point focal, les unités sont déjà filtrées par le backend
+      // Ordre des promesses : types (0), unites (1)
+      types.value = results[0].data || [];
+      unites.value = results[1].data || [];
+    }
   } catch (error) {
     console.error(
       "Erreur lors du chargement des listes (départements / unités / types):",
@@ -207,17 +357,39 @@ function openEdit(e) {
 
 async function saveEquipement(data) {
   try {
+    let response;
     if (data.id) {
-      await equipementApi.update(data.id, data);
+      response = await equipementApi.update(data.id, data);
     } else {
-      await equipementApi.create(data);
+      response = await equipementApi.create(data);
     }
+    
+    // Fermer le modal
     showModal.value = false;
+    
+    // Réinitialiser les filtres uniquement lors de la création d'un nouvel équipement
+    // pour s'assurer qu'il apparaisse dans la liste
+    if (!data.id) {
+      filters.value = {
+        departement_id: "",
+        unite_id: "",
+        etat: ""
+      };
+    }
+    
+    // Recharger les données
     await loadData();
   } catch (error) {
     console.error("Erreur lors de l'enregistrement:", error);
     alert(error.response?.data?.message || "Erreur lors de l'enregistrement.");
   }
+}
+
+function handleTypeAdded(newType) {
+  // Ajouter le nouveau type à la liste
+  types.value.push(newType);
+  // Trier la liste par nom
+  types.value.sort((a, b) => a.nom.localeCompare(b.nom));
 }
 
 async function remove(id) {
@@ -273,116 +445,297 @@ function formatDate(date) {
   });
 }
 
-onMounted(loadData);
+const tableCardRef = ref(null);
+const headerScrollRef = ref(null);
+const isAtBottom = ref(false);
+const SCROLL_THRESHOLD = 80;
+
+function onTableScroll() {
+  if (headerScrollRef.value && tableCardRef.value) {
+    headerScrollRef.value.scrollLeft = tableCardRef.value.scrollLeft;
+  }
+  updateScrollPosition();
+}
+
+function updateScrollPosition() {
+  const el = tableCardRef.value;
+  if (!el) return;
+  const { scrollTop, scrollHeight, clientHeight } = el;
+  const maxScroll = scrollHeight - clientHeight;
+  isAtBottom.value = maxScroll > 50 && scrollTop >= maxScroll - SCROLL_THRESHOLD;
+}
+
+function scrollToBottom() {
+  const el = tableCardRef.value;
+  if (!el) return;
+  el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+  setTimeout(updateScrollPosition, 450);
+}
+
+function scrollToTop() {
+  const el = tableCardRef.value;
+  if (!el) return;
+  el.scrollTo({ top: 0, behavior: "smooth" });
+  setTimeout(updateScrollPosition, 450);
+}
+
+watch(sortedEquipements, () => {
+  nextTick(updateScrollPosition);
+});
+
+onMounted(async () => {
+  await loadData();
+  await nextTick();
+  updateScrollPosition();
+});
 </script>
 
 <style scoped>
+/* PAGE */
 .equipements-page {
-  margin-left: 240px;
-  padding: 30px;
-  background: #eef2f7;
+  display: flex;
   min-height: 100vh;
+  background: linear-gradient(135deg, #f6f7fb 0%, #eef2f7 100%);
+  font-family: 'Inter', 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+.content-wrapper {
+  margin-left: 220px;
+  width: calc(100% - 220px);
+  padding: 40px;
+}
+
+/* HEADER BAR */
 .header-bar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  gap: 20px;
 }
 
+.header-content h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+  font-family: 'Inter', sans-serif;
+}
+
+.subtitle {
+  color: #64748b;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ADD BUTTON */
 .add-btn {
-  background: #16a34a;
+  background: linear-gradient(135deg, #0a5bc4 0%, #09315c 100%);
   color: white;
   border: none;
-  padding: 12px 22px;
-  border-radius: 10px;
-  font-weight: bold;
-  display: flex;
-  gap: 10px;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(10, 91, 196, 0.3);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
 }
 
+.add-btn span {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.add-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(10, 91, 196, 0.4);
+}
+
+.add-btn:active {
+  transform: translateY(0);
+}
+
+/* FILTERS CARD */
 .filters-card {
   background: white;
-  padding: 20px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .filters-card h3 {
-  margin: 0 0 15px 0;
-  font-size: 16px;
+  margin: 0 0 18px 0;
+  font-size: 18px;
+  font-weight: 700;
   color: #1a202c;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.3px;
 }
 
 .filters-row {
   display: flex;
-  gap: 12px;
+  gap: 14px;
   flex-wrap: wrap;
   align-items: center;
 }
 
 .filters-row select {
-  padding: 8px 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  padding: 12px 14px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
   font-size: 14px;
-  min-width: 180px;
+  font-family: 'Inter', sans-serif;
+  min-width: 200px;
+  transition: all 0.3s ease;
+  background: white;
+  cursor: pointer;
+}
+
+.filters-row select:focus {
+  outline: none;
+  border-color: #0a5bc4;
+  box-shadow: 0 0 0 3px rgba(10, 91, 196, 0.1);
 }
 
 .reset-btn {
-  padding: 8px 16px;
+  padding: 12px 20px;
   background: #f7fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  color: #475569;
+  transition: all 0.3s ease;
 }
 
 .reset-btn:hover {
-  background: #edf2f7;
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
 }
 
-.table-card {
+/* TABLE CARD - 2 tables : header fixe en haut, body scrollable */
+.table-card-wrapper {
+  display: flex;
+  flex-direction: column;
   background: white;
-  border-radius: 14px;
-  box-shadow: 0 12px 25px rgba(0,0,0,0.08);
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   overflow: hidden;
 }
 
-table {
+.table-header-fixed {
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex-shrink: 0;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.08);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.table-header-fixed::-webkit-scrollbar {
+  display: none;
+}
+
+.table-body-scroll {
+  overflow: auto;
+  max-height: 60vh;
+  scrollbar-gutter: stable;
+  flex: 1;
+  min-height: 0;
+}
+
+/* TABLE */
+.data-table {
   width: 100%;
+  min-width: 900px;
   border-collapse: collapse;
+  font-family: 'Inter', sans-serif;
 }
 
-thead {
-  background: linear-gradient(90deg, #0a5bc4, #09315c);
+.data-table thead {
+  background: linear-gradient(135deg, #0a5bc4 0%, #09315c 100%);
 }
 
-thead th {
+.data-table thead th {
   color: white;
-  padding: 14px;
+  padding: 18px 14px;
   text-align: left;
-  font-weight: 600;
-}
-
-tbody td {
-  padding: 14px;
-  border-bottom: 1px solid #eee;
-}
-
-.bold { font-weight: 600; }
-.center { text-align: center; }
-.comment { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.date { font-size: 13px; color: #666; }
-
-.badge {
-  padding: 4px 10px;
-  border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.data-table thead th.center {
+  text-align: center;
+}
+
+/* BODY */
+.data-table tbody td {
+  padding: 16px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+}
+
+.data-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.data-table tbody tr:hover {
+  background: #f8fafc;
+  transform: scale(1.01);
+}
+
+.bold {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.center {
+  text-align: center;
+}
+
+.comment {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.date {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.badge {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  display: inline-block;
+  letter-spacing: 0.2px;
+  text-transform: capitalize;
 }
 
 .badge.success {
@@ -410,24 +763,100 @@ tbody td {
   color: #1e40af;
 }
 
+/* ACTIONS */
+.actions-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
 .action {
   border: none;
   background: none;
   cursor: pointer;
-  font-size: 16px;
-  margin: 0 4px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: background 0.2s;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.action:hover {
-  background: #f3f4f6;
+.action-icon {
+  width: 18px;
+  height: 18px;
+  display: block;
+  transition: transform 0.2s ease;
 }
 
+.action.edit {
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+}
+
+.action.edit:hover {
+  background: rgba(37, 99, 235, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(37, 99, 235, 0.2);
+}
+
+.action.edit:hover .action-icon {
+  transform: scale(1.1);
+}
+
+.action.delete {
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+}
+
+.action.delete:hover {
+  background: rgba(220, 38, 38, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(220, 38, 38, 0.2);
+}
+
+.action.delete:hover .action-icon {
+  transform: scale(1.1);
+}
+
+/* FLÈCHE BAS / HAUT */
+.scroll-to-bottom-btn {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #0a5bc4 0%, #09315c 100%);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(10, 91, 196, 0.4);
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.scroll-to-bottom-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 24px rgba(10, 91, 196, 0.5);
+}
+
+.scroll-to-bottom-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* EMPTY */
 .empty {
   text-align: center;
-  padding: 30px;
-  color: #999;
+  padding: 40px;
+  color: #94a3b8;
+  font-size: 15px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
 }
 </style>

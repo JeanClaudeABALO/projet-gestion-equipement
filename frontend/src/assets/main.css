@@ -9,6 +9,9 @@ html, body, #app {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  font-family: 'Inter', 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Application layout: flex column so footer can be pushed */
@@ -18,11 +21,11 @@ html, body, #app {
   min-height: 100vh;
 }
 
-/* MAIN content: reserve space for fixed header (125px) and footer (if any) */
+/* MAIN content: reserve space for fixed header (80px) */
 .main-content {
   flex: 1;
   width: 100%;
-  padding-top: 125px;   /* IMPORTANT: equals header total height (70 + 55) */
+  padding-top: 80px;   /* IMPORTANT: equals header height */
   box-sizing: border-box;
 }
 

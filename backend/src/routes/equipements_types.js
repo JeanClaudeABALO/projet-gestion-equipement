@@ -8,8 +8,15 @@ const controller = require("../controllers/equipementsTypesController");
 router.get("/", auth, controller.getAll);
 router.get("/:id", auth, controller.getOne);
 
-// Modification réservée aux admins
-router.post("/", auth, adminOnly, controller.create);
+// Création accessible aux admins et points focaux (pour ajout depuis formulaire)
+router.post("/", auth, (req, res, next) => {
+  if (req.user.role === "admin" || req.user.role === "super_admin" || req.user.role === "pf") {
+    return next();
+  }
+  return res.status(403).json({ message: "Accès refusé. Administrateur ou Point Focal uniquement." });
+}, controller.create);
+
+// Modification et suppression réservées aux admins
 router.put("/:id", auth, adminOnly, controller.update);
 router.delete("/:id", auth, adminOnly, controller.delete);
 

@@ -101,7 +101,12 @@ function submit() {
       }, 1500);
     })
     .catch((err) => {
-      error.value = err.response?.data?.message || "Erreur lors de la création de l'administrateur";
+      console.error("Erreur inscription super admin:", err);
+      const errorMessage = err.response?.data?.message || 
+                         err.response?.data?.error?.message ||
+                         err.message || 
+                         "Erreur lors de la création du super administrateur";
+      error.value = errorMessage;
       loading.value = false;
     });
 }

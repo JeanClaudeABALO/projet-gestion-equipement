@@ -10,6 +10,11 @@ import Login from "../pages/Login.vue";
 import DashboardAdmin from "../pages/DashboardAdmin.vue";
 import DashboardPointFocal from "../pages/DashboardPointFocal.vue";
 import Utilisateurs from "../pages/Utilisateurs.vue";
+import LaPlateforme from "../pages/LaPlateforme.vue";
+import Statistiques from "../pages/Statistiques.vue";
+import Contact from "../pages/Contact.vue";
+import EquipementsPublic from "../pages/EquipementsPublic.vue";
+import ChangePassword from "../pages/ChangePassword.vue";
 
 
 const routes = [
@@ -24,10 +29,35 @@ const routes = [
     component: Login 
   },
   { 
+    path: "/change-password", 
+    name: "change-password",
+    component: ChangePassword 
+  },
+  { 
+    path: "/la-plateforme", 
+    name: "la-plateforme",
+    component: LaPlateforme 
+  },
+  { 
+    path: "/statistiques", 
+    name: "statistiques",
+    component: Statistiques 
+  },
+  { 
+    path: "/contact", 
+    name: "contact",
+    component: Contact 
+  },
+  { 
+    path: "/equipements-public", 
+    name: "equipements-public",
+    component: EquipementsPublic 
+  },
+  { 
     path: "/dashboard/admin", 
     name: "dashboard-admin",
     component: DashboardAdmin,
-    meta: { requiresAuth: true, role: "admin" }
+    meta: { requiresAuth: true, role: "admin" } // super_admin peut aussi y accéder (géré dans beforeEach)
   },
   {
     path: "/dashboard-point-focal",
@@ -38,7 +68,7 @@ const routes = [
   { 
     path: "/departements", 
     component: Departements,
-    meta: { requiresAuth: true, role: "admin" }
+    meta: { requiresAuth: true, role: "admin" } // super_admin peut aussi y accéder
   },
   { 
     path: "/equipements", 
@@ -48,7 +78,7 @@ const routes = [
   { 
     path: "/reparations", 
     component: Reparations,
-    meta: { requiresAuth: true, role: "admin" }
+    meta: { requiresAuth: true, role: "admin" } // super_admin peut aussi y accéder
   },
   { 
     path: "/dashboard-point-focal/reparations", 
@@ -58,12 +88,17 @@ const routes = [
   { 
     path: "/unites", 
     component: Unites,
-    meta: { requiresAuth: true, role: "admin" }
+    meta: { requiresAuth: true, role: "admin" } // super_admin peut aussi y accéder
+  },
+  { 
+    path: "/dashboard-point-focal/unites", 
+    component: () => import("../pages/UnitesPF.vue"),
+    meta: { requiresAuth: true, role: "pf" }
   },
   { 
     path: "/utilisateurs", 
     component: Utilisateurs,
-    meta: { requiresAuth: true, role: "admin" }
+    meta: { requiresAuth: true, role: ["super_admin", "admin"] } // super_admin et admin peuvent gérer les utilisateurs
   }
 ];
 
@@ -74,7 +109,15 @@ const router = createRouter({
 
 // Sécurisation : Rediriger si pas connecté et vérifier les rôles
 router.beforeEach((to, from, next) => {
-  const publicPages = ["/", "/login"];
+  const publicPages = [
+    "/", 
+    "/login", 
+    "/change-password",
+    "/la-plateforme", 
+    "/statistiques", 
+    "/contact", 
+    "/equipements-public"
+  ];
   const authRequired = !publicPages.includes(to.path);
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
@@ -85,20 +128,33 @@ router.beforeEach((to, from, next) => {
   }
 
   // Si la page nécessite un rôle spécifique
-  if (to.meta?.role && role !== to.meta.role) {
-    // Rediriger selon le rôle de l'utilisateur
-    if (role === "admin") {
-      return next("/dashboard/admin");
-    } else if (role === "pf") {
-      return next("/dashboard-point-focal");
-    } else {
-      return next("/login");
+  if (to.meta?.role) {
+    // Si role est un tableau, vérifier si le rôle de l'utilisateur est dans le tableau
+    const allowedRoles = Array.isArray(to.meta.role) ? to.meta.role : [to.meta.role];
+    
+    // Vérifier si le rôle de l'utilisateur est autorisé
+    let isAuthorized = allowedRoles.includes(role);
+    
+    // Si la page nécessite "admin" et que l'utilisateur est super_admin, autoriser aussi
+    if (!isAuthorized && allowedRoles.includes("admin") && role === "super_admin") {
+      isAuthorized = true;
+    }
+    
+    if (!isAuthorized) {
+      // Rediriger selon le rôle de l'utilisateur
+      if (role === "admin" || role === "super_admin") {
+        return next("/dashboard/admin");
+      } else if (role === "pf") {
+        return next("/dashboard-point-focal");
+      } else {
+        return next("/login");
+      }
     }
   }
 
   // Si connecté et sur la page login ou home, rediriger vers le dashboard approprié
   if ((to.path === "/login" || to.path === "/") && token) {
-    if (role === "admin") {
+    if (role === "admin" || role === "super_admin") {
       return next("/dashboard/admin");
     } else if (role === "pf") {
       return next("/dashboard-point-focal");

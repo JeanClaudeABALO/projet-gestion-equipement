@@ -13,32 +13,33 @@ async function initAdmin() {
     try {
         console.log("🔐 Initialisation de l'administrateur principal...");
 
-        // Vérifier si un admin existe déjà
-        const [existingAdmins] = await db
+        // Vérifier si un super admin existe déjà
+        const [existingSuperAdmins] = await db
             .promise()
             .query(
                 `SELECT u.id FROM utilisateurs u 
                  JOIN roles r ON u.role_id = r.id 
-                 WHERE r.code = 'admin'`
+                 WHERE r.code = 'super_admin'`
             );
 
-        if (existingAdmins.length > 0) {
-            console.log("⚠️  Un administrateur existe déjà. Aucune action effectuée.");
-            console.log(`   Admin existant ID: ${existingAdmins[0].id}`);
+        if (existingSuperAdmins.length > 0) {
+            console.log("⚠️  Un super administrateur existe déjà. Aucune action effectuée.");
+            console.log(`   Super Admin existant ID: ${existingSuperAdmins[0].id}`);
             process.exit(0);
         }
 
-        // Récupérer l'ID du rôle admin
+        // Récupérer l'ID du rôle super_admin
         const [roles] = await db
             .promise()
-            .query("SELECT id FROM roles WHERE code = 'admin'");
+            .query("SELECT id FROM roles WHERE code = 'super_admin'");
 
         if (roles.length === 0) {
-            console.error("❌ Erreur: Le rôle 'admin' n'existe pas dans la base de données.");
+            console.error("❌ Erreur: Le rôle 'super_admin' n'existe pas dans la base de données.");
+            console.error("   Veuillez exécuter la migration: database/migration_add_super_admin.sql");
             process.exit(1);
         }
 
-        const adminRoleId = roles[0].id;
+        const superAdminRoleId = roles[0].id;
 
         // Informations de l'admin (à modifier selon vos besoins)
         const adminEmail = process.env.ADMIN_EMAIL || "admin@gestion-equipement.bj";
@@ -48,16 +49,16 @@ async function initAdmin() {
         // Hasher le mot de passe
         const hashedPassword = await bcrypt.hash(adminPassword, 10);
 
-        // Créer l'admin
+        // Créer le super admin (avec doit_changer_mdp = 0 pour le super admin principal)
         const [result] = await db
             .promise()
             .query(
-                `INSERT INTO utilisateurs (nom, email, password, role_id, actif) 
-                 VALUES (?, ?, ?, ?, 1)`,
-                [adminNom, adminEmail, hashedPassword, adminRoleId]
+                `INSERT INTO utilisateurs (nom, email, password, role_id, actif, doit_changer_mdp) 
+                 VALUES (?, ?, ?, ?, 1, 0)`,
+                [adminNom, adminEmail, hashedPassword, superAdminRoleId]
             );
 
-        console.log("✅ Administrateur principal créé avec succès !");
+        console.log("✅ Super administrateur créé avec succès !");
         console.log(`   ID: ${result.insertId}`);
         console.log(`   Email: ${adminEmail}`);
         console.log(`   Mot de passe: ${adminPassword}`);

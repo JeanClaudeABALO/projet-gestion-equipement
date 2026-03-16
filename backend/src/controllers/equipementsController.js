@@ -115,33 +115,92 @@ exports.create = async (req, res) => {
 // ======================
 // Modification
 // ======================
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
     const { unite_id, type_id, quantite, etat, commentaire } = req.body;
 
-    const sql = `
-        UPDATE equipements
-        SET unite_id=?, type_id=?, quantite=?, etat=?, commentaire=?, 
-            date_maj=NOW(), responsable_id=?
-        WHERE id=?
-    `;
+    if (!unite_id || !type_id) {
+        return res.status(400).json({ message: "unite_id et type_id sont obligatoires" });
+    }
 
-    const values = [
-        unite_id,
-        type_id,
-        quantite,
-        etat,
-        commentaire,
-        req.user.id,
-        req.params.id
-    ];
+    try {
+        // Si l'utilisateur est Point Focal, vérifier que l'équipement appartient à son département
+        if (req.user.role === "pf") {
+            // Récupérer le département du PF
+            const [userData] = await db
+                .promise()
+                .query("SELECT departement_id FROM utilisateurs WHERE id = ?", [req.user.id]);
 
-    db.query(sql, values, (err, result) => {
-        if (err) return res.status(500).json({ error: err });
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: "Équipement non trouvé" });
+            if (!userData[0] || !userData[0].departement_id) {
+                return res.status(403).json({ message: "Vous n'êtes rattaché à aucun département" });
+            }
+
+            const pfDepartementId = userData[0].departement_id;
+
+            // Vérifier que l'équipement existe et appartient au département du PF
+            const [equipementData] = await db
+                .promise()
+                .query(
+                    `SELECT e.id, u.departement_id 
+                     FROM equipements e 
+                     JOIN unites u ON e.unite_id = u.id 
+                     WHERE e.id = ?`,
+                    [req.params.id]
+                );
+
+            if (equipementData.length === 0) {
+                return res.status(404).json({ message: "Équipement non trouvé" });
+            }
+
+            if (equipementData[0].departement_id !== pfDepartementId) {
+                return res.status(403).json({
+                    message: "Vous ne pouvez modifier que les équipements de votre département"
+                });
+            }
+
+            // Vérifier que la nouvelle unité appartient aussi au département du PF
+            const [uniteData] = await db
+                .promise()
+                .query("SELECT departement_id FROM unites WHERE id = ?", [unite_id]);
+
+            if (uniteData.length === 0) {
+                return res.status(404).json({ message: "Unité non trouvée" });
+            }
+
+            if (uniteData[0].departement_id !== pfDepartementId) {
+                return res.status(403).json({
+                    message: "Vous ne pouvez assigner des équipements qu'aux unités de votre département"
+                });
+            }
         }
-        res.json({ message: "Équipement modifié" });
-    });
+
+        const sql = `
+            UPDATE equipements
+            SET unite_id=?, type_id=?, quantite=?, etat=?, commentaire=?, 
+                date_maj=NOW(), responsable_id=?
+            WHERE id=?
+        `;
+
+        const values = [
+            unite_id,
+            type_id,
+            quantite,
+            etat,
+            commentaire,
+            req.user.id,
+            req.params.id
+        ];
+
+        db.query(sql, values, (err, result) => {
+            if (err) return res.status(500).json({ error: err });
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ message: "Équipement non trouvé" });
+            }
+            res.json({ message: "Équipement modifié" });
+        });
+    } catch (error) {
+        console.error("Erreur modification équipement:", error);
+        res.status(500).json({ message: "Erreur serveur", error: error.message });
+    }
 };
 
 // ======================

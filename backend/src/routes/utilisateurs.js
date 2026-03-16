@@ -1,22 +1,33 @@
 const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/authMiddleware");
+const superAdminOnly = require("../middleware/superAdminMiddleware");
 const adminOnly = require("../middleware/adminMiddleware");
 const controller = require("../controllers/utilisateursControllers");
 
-// Lister tous les utilisateurs (admin seulement)
-router.get("/", auth, adminOnly, controller.getAll);
+// Middleware pour autoriser super_admin et admin
+const adminOrSuperAdmin = (req, res, next) => {
+  if (req.user.role === "super_admin" || req.user.role === "admin") {
+    return next();
+  }
+  return res.status(403).json({ 
+    message: "Accès refusé. Administrateur ou Super Administrateur uniquement." 
+  });
+};
 
-// Récupérer un utilisateur (admin seulement)
-router.get("/:id", auth, adminOnly, controller.getOne);
+// Lister tous les utilisateurs (super_admin et admin)
+router.get("/", auth, adminOrSuperAdmin, controller.getAll);
 
-// Créer un utilisateur (admin seulement)
-router.post("/", auth, adminOnly, controller.create);
+// Récupérer un utilisateur (super_admin et admin)
+router.get("/:id", auth, adminOrSuperAdmin, controller.getOne);
 
-// Modifier un utilisateur (admin seulement)
-router.put("/:id", auth, adminOnly, controller.update);
+// Créer un utilisateur (super_admin peut créer admin et pf, admin peut créer uniquement pf)
+router.post("/", auth, adminOrSuperAdmin, controller.create);
 
-// Supprimer un utilisateur (admin seulement)
-router.delete("/:id", auth, adminOnly, controller.delete);
+// Modifier un utilisateur (super_admin seulement)
+router.put("/:id", auth, superAdminOnly, controller.update);
+
+// Supprimer un utilisateur (super_admin seulement)
+router.delete("/:id", auth, superAdminOnly, controller.delete);
 
 module.exports = router;

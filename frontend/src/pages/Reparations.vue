@@ -1,10 +1,15 @@
 <template>
   <div class="reparations-page">
-    <!-- HEADER -->
-    <div class="header-bar">
-      <h1>Réparations des équipements</h1>
-      <p class="subtitle">Suivi des pannes et interventions sur l'ensemble du ministère</p>
-    </div>
+    <SidebarAdmin />
+
+    <div class="content-wrapper">
+      <!-- HEADER -->
+      <div class="header-bar">
+        <div class="header-content">
+          <h1>Réparations des équipements</h1>
+          <p class="subtitle">Suivi des pannes et interventions sur l'ensemble du CDSP</p>
+        </div>
+      </div>
 
     <!-- FILTRES -->
     <div class="filters-card">
@@ -94,10 +99,10 @@
       </table>
     </div>
 
-    <!-- MODAL TRAITEMENT -->
-    <div v-if="showModal" class="modal-backdrop" @click.self="showModal = false">
-      <div class="modal">
-        <h3>Traitement de la réparation #{{ selected?.id }}</h3>
+      <!-- MODAL TRAITEMENT -->
+      <div v-if="showModal" class="modal-backdrop" @click.self="showModal = false">
+        <div class="modal">
+          <h3>Traitement de la réparation #{{ selected?.id }}</h3>
         <p class="modal-subtitle">
           Département : <strong>{{ selected?.departement_nom }}</strong> –
           Unité : <strong>{{ selected?.unite_nom }}</strong>
@@ -138,6 +143,7 @@
           <button class="btn-confirm" @click="validerTraitement">
             Enregistrer
           </button>
+          </div>
         </div>
       </div>
     </div>
@@ -148,6 +154,7 @@
 import { ref, onMounted, computed } from "vue";
 import reparationsApi from "../api/reparations";
 import departementsApi from "../api/departement";
+import SidebarAdmin from "../components/SidebarAdmin.vue";
 
 const reparations = ref([]);
 const departements = ref([]);
@@ -288,107 +295,182 @@ onMounted(loadData);
 </script>
 
 <style scoped>
+/* PAGE */
 .reparations-page {
-  margin-left: 240px;
-  padding: 30px;
-  background: #eef2f7;
+  display: flex;
   min-height: 100vh;
+  background: linear-gradient(135deg, #f6f7fb 0%, #eef2f7 100%);
+  font-family: 'Inter', 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+.content-wrapper {
+  margin-left: 220px;
+  width: calc(100% - 220px);
+  padding: 40px;
+}
+
+/* HEADER BAR */
 .header-bar {
-  margin-bottom: 18px;
+  margin-bottom: 32px;
+}
+
+.header-content h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+  font-family: 'Inter', sans-serif;
 }
 
 .subtitle {
-  color: #4b5563;
-  margin-top: 4px;
+  color: #64748b;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
 }
 
+/* FILTERS CARD */
 .filters-card {
   background: white;
-  padding: 16px 20px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .filters-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 18px;
   align-items: flex-end;
 }
 
 .filter-item {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .filter-item label {
-  font-size: 13px;
-  color: #4b5563;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  font-family: 'Inter', sans-serif;
 }
 
 .filter-item select,
 .filter-item input[type="date"] {
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 2px solid #e2e8f0;
   font-size: 14px;
-  min-width: 160px;
+  font-family: 'Inter', sans-serif;
+  min-width: 180px;
+  transition: all 0.3s ease;
+  background: white;
+  cursor: pointer;
+}
+
+.filter-item select:focus,
+.filter-item input[type="date"]:focus {
+  outline: none;
+  border-color: #0a5bc4;
+  box-shadow: 0 0 0 3px rgba(10, 91, 196, 0.1);
 }
 
 .dates-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+}
+
+.dates-row span {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .reset-btn {
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  background: #f9fafb;
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: 2px solid #e2e8f0;
+  background: #f7fafc;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  color: #475569;
+  transition: all 0.3s ease;
 }
 
 .reset-btn:hover {
-  background: #edf2f7;
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
 }
 
+/* TABLE CARD */
 .table-card {
   background: white;
-  border-radius: 14px;
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
+/* TABLE */
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: 'Inter', sans-serif;
 }
 
+/* TABLE HEADER */
 thead {
-  background: linear-gradient(90deg, #0a5bc4, #09315c);
+  background: linear-gradient(135deg, #0a5bc4 0%, #09315c 100%);
 }
 
 thead th {
   color: white;
-  padding: 12px;
-  font-size: 13px;
+  padding: 18px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
   text-align: left;
 }
 
+thead th.center {
+  text-align: center;
+}
+
+/* BODY */
 tbody td {
-  padding: 12px;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 16px 14px;
+  border-bottom: 1px solid #f1f5f9;
   font-size: 14px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  color: #475569;
+}
+
+tbody tr {
+  transition: all 0.2s ease;
+}
+
+tbody tr:hover {
+  background: #f8fafc;
+  transform: scale(1.01);
 }
 
 .bold {
   font-weight: 600;
+  color: #1e293b;
 }
 
 .center {
@@ -403,8 +485,9 @@ tbody td {
 }
 
 .date {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
 }
 
 .actions {
@@ -413,25 +496,34 @@ tbody td {
 }
 
 .action-btn {
-  padding: 6px 12px;
-  border-radius: 6px;
+  padding: 10px 18px;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
   font-size: 13px;
   font-weight: 600;
-  background: #0a5bc4;
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #0a5bc4 0%, #09315c 100%);
   color: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(10, 91, 196, 0.2);
+  letter-spacing: 0.3px;
 }
 
 .action-btn:hover {
-  background: #09315c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(10, 91, 196, 0.3);
 }
 
 .badge {
-  padding: 4px 10px;
-  border-radius: 999px;
+  padding: 6px 14px;
+  border-radius: 8px;
   font-size: 12px;
   font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  display: inline-block;
+  letter-spacing: 0.2px;
+  text-transform: capitalize;
 }
 
 .status-open {
@@ -456,8 +548,11 @@ tbody td {
 
 .empty {
   text-align: center;
-  padding: 30px;
-  color: #9ca3af;
+  padding: 40px;
+  color: #94a3b8;
+  font-size: 15px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
 }
 
 /* Modal traitement */
@@ -473,72 +568,124 @@ tbody td {
 
 .modal {
   background: white;
-  padding: 24px;
-  border-radius: 12px;
+  padding: 32px;
+  border-radius: 16px;
   width: 90%;
-  max-width: 520px;
+  max-width: 560px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  font-family: 'Inter', 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .modal h3 {
-  margin: 0 0 8px 0;
-  font-size: 18px;
+  margin: 0 0 12px 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a202c;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.3px;
 }
 
 .modal-subtitle {
-  margin: 0 0 8px 0;
-  font-size: 13px;
-  color: #4b5563;
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
 }
 
 .modal-desc {
   font-size: 14px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  color: #475569;
+  font-family: 'Inter', sans-serif;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 10px;
+  border-left: 4px solid #0a5bc4;
 }
 
 .form-group {
-  margin-bottom: 14px;
+  margin-bottom: 18px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 6px;
-  font-size: 13px;
+  margin-bottom: 8px;
+  font-size: 14px;
   font-weight: 600;
-  color: #374151;
+  color: #2d3748;
+  font-family: 'Inter', sans-serif;
 }
 
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 2px solid #e2e8f0;
   font-size: 14px;
+  font-family: 'Inter', sans-serif;
   box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #0a5bc4;
+  box-shadow: 0 0 0 3px rgba(10, 91, 196, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-group textarea::placeholder {
+  color: #94a3b8;
 }
 
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  margin-top: 12px;
+  gap: 12px;
+  margin-top: 24px;
 }
 
 .btn-cancel {
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  background: #f9fafb;
+  padding: 12px 24px;
+  border-radius: 10px;
+  border: 2px solid #e2e8f0;
+  background: #f7fafc;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  color: #475569;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
 }
 
 .btn-confirm {
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 12px 24px;
+  border-radius: 10px;
   border: none;
-  background: #0a5bc4;
+  background: linear-gradient(135deg, #0a5bc4 0%, #09315c 100%);
   color: white;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(10, 91, 196, 0.2);
+}
+
+.btn-confirm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(10, 91, 196, 0.3);
 }
 </style>

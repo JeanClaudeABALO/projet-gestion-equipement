@@ -24,7 +24,8 @@ CREATE TABLE roles (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO roles (code, libelle) VALUES
-('admin', 'Administrateur Central'),
+('super_admin', 'Super Administrateur'),
+('admin', 'Administrateur'),
 ('pf', 'Point Focal Départemental');
 
 -- Départements
@@ -90,6 +91,7 @@ CREATE TABLE utilisateurs (
     role_id TINYINT UNSIGNED NOT NULL,
     departement_id INT UNSIGNED NULL, -- nul pour admin ; défini pour PF
     actif TINYINT(1) NOT NULL DEFAULT 1,
+    doit_changer_mdp TINYINT(1) NOT NULL DEFAULT 1, -- 1 = doit changer, 0 = mot de passe personnel
     date_creation DATETIME DEFAULT CURRENT_TIMESTAMP,
     last_login DATETIME NULL,
     CONSTRAINT fk_users_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE RESTRICT,

@@ -1,12 +1,18 @@
 <template>
   <div class="reparations-pf-page">
-    <!-- HEADER -->
-    <div class="header-bar">
-      <h1>Réparations de mon département</h1>
-      <button class="add-btn" @click="showModal = true">
-        <span>＋</span> Déclarer une panne
-      </button>
-    </div>
+    <SidebarPointFocal />
+
+    <div class="content-wrapper">
+      <!-- HEADER -->
+      <div class="header-bar">
+        <div class="header-content">
+          <h1>Réparations</h1>
+          <p class="subtitle">Gérez les réparations des équipements de votre département</p>
+        </div>
+        <button class="add-btn" @click="showModal = true">
+          <span>＋</span> Déclarer une panne
+        </button>
+      </div>
 
     <!-- TABLEAU -->
     <div class="table-card">
@@ -78,6 +84,7 @@
         </div>
       </div>
     </div>
+    </div>
   </div>
 </template>
 
@@ -85,6 +92,7 @@
 import { ref, onMounted } from "vue";
 import reparationsApi from "../api/reparations";
 import equipementApi from "../api/equipement";
+import SidebarPointFocal from "../components/SidebarPointFocal.vue";
 
 const reparations = ref([]);
 const equipements = ref([]);
@@ -105,7 +113,8 @@ async function loadData() {
     equipements.value = e.data || [];
   } catch (error) {
     console.error("Erreur chargement réparations PF:", error);
-    alert("Erreur lors du chargement des réparations.");
+    const errorMsg = error.response?.data?.message || "Erreur lors du chargement des réparations.";
+    alert(errorMsg);
   }
 }
 
@@ -167,12 +176,13 @@ async function submit() {
       equipement_id: form.value.equipement_id,
       description: form.value.description,
     });
-    alert("Panne déclarée avec succès.");
+    alert("Panne déclarée avec succès !");
     closeModal();
     await loadData();
   } catch (error) {
     console.error("Erreur création réparation:", error);
-    alert(error.response?.data?.message || "Erreur lors de la déclaration.");
+    const errorMsg = error.response?.data?.message || "Erreur lors de la déclaration de la panne.";
+    alert(errorMsg);
   }
 }
 
@@ -181,83 +191,156 @@ onMounted(loadData);
 
 <style scoped>
 .reparations-pf-page {
-  margin-left: 240px;
-  padding: 30px;
-  background: #eef2f7;
+  display: flex;
   min-height: 100vh;
+  background: linear-gradient(135deg, #f6f7fb 0%, #eef2f7 100%);
+  font-family: 'Inter', 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.content-wrapper {
+  margin-left: 220px;
+  width: calc(100% - 220px);
+  padding: 40px;
 }
 
 .header-bar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  gap: 20px;
+}
+
+.header-content h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+  font-family: 'Inter', sans-serif;
+}
+
+.subtitle {
+  color: #64748b;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
 }
 
 .add-btn {
-  background: #16a34a;
+  background: linear-gradient(135deg, #0a5bc4 0%, #09315c 100%);
   color: white;
   border: none;
-  padding: 10px 18px;
-  border-radius: 10px;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-size: 15px;
   font-weight: 600;
+  font-family: 'Inter', sans-serif;
   cursor: pointer;
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(10, 91, 196, 0.3);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.add-btn span {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.add-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(10, 91, 196, 0.4);
+}
+
+.add-btn:active {
+  transform: translateY(0);
 }
 
 .table-card {
   background: white;
-  border-radius: 14px;
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: 'Inter', sans-serif;
 }
 
 thead {
-  background: linear-gradient(90deg, #0a5bc4, #09315c);
+  background: linear-gradient(135deg, #0a5bc4 0%, #09315c 100%);
 }
 
 thead th {
   color: white;
-  padding: 12px;
-  font-size: 13px;
+  padding: 18px 16px;
+  font-size: 12px;
+  font-weight: 600;
   text-align: left;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
 }
 
 tbody td {
-  padding: 12px;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 18px 16px;
+  border-bottom: 1px solid #f1f5f9;
   font-size: 14px;
+  font-weight: 500;
+  color: #475569;
+  font-family: 'Inter', sans-serif;
+}
+
+tbody tr {
+  transition: all 0.2s ease;
+}
+
+tbody tr:hover {
+  background: #f8fafc;
+  transform: scale(1.01);
 }
 
 .desc {
-  max-width: 260px;
+  max-width: 300px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: #475569;
 }
 
 .date {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
 }
 
 .empty {
   text-align: center;
-  padding: 30px;
-  color: #9ca3af;
+  padding: 40px;
+  color: #94a3b8;
+  font-size: 15px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
 }
 
 .badge {
-  padding: 4px 10px;
-  border-radius: 999px;
+  padding: 6px 14px;
+  border-radius: 8px;
   font-size: 12px;
   font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  display: inline-block;
+  letter-spacing: 0.2px;
+  text-transform: capitalize;
 }
 
 .status-open {
@@ -267,7 +350,7 @@ tbody td {
 
 .status-progress {
   background: #dbeafe;
-  color: #1d4ed8;
+  color: #1e40af;
 }
 
 .status-done {
@@ -277,7 +360,7 @@ tbody td {
 
 .status-cancel {
   background: #fee2e2;
-  color: #b91c1c;
+  color: #991b1b;
 }
 
 .modal-backdrop {
@@ -292,71 +375,101 @@ tbody td {
 
 .modal {
   background: white;
-  padding: 24px;
-  border-radius: 12px;
+  padding: 32px;
+  border-radius: 16px;
   width: 90%;
   max-width: 520px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  font-family: 'Inter', 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .modal h3 {
-  margin: 0 0 12px 0;
+  margin: 0 0 24px 0;
+  color: #1a202c;
+  font-size: 24px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.3px;
 }
 
 .form-group {
-  margin-bottom: 14px;
+  margin-bottom: 18px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 6px;
-  font-size: 13px;
+  margin-bottom: 8px;
+  font-size: 14px;
   font-weight: 600;
-  color: #374151;
+  color: #2d3748;
+  font-family: 'Inter', sans-serif;
 }
 
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 2px solid #e2e8f0;
   font-size: 14px;
+  font-family: 'Inter', sans-serif;
   box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #0a5bc4;
+  box-shadow: 0 0 0 3px rgba(10, 91, 196, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
 }
 
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  margin-top: 12px;
+  gap: 12px;
+  margin-top: 24px;
 }
 
 .btn-cancel {
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  background: #f9fafb;
+  padding: 12px 24px;
+  border-radius: 10px;
+  border: 2px solid #e2e8f0;
+  background: #f7fafc;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  color: #475569;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
 }
 
 .btn-confirm {
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 12px 24px;
+  border-radius: 10px;
   border: none;
-  background: #0a5bc4;
+  background: linear-gradient(135deg, #0a5bc4 0%, #09315c 100%);
   color: white;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(10, 91, 196, 0.2);
+}
+
+.btn-confirm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(10, 91, 196, 0.3);
 }
 </style>
-
-{
-  "cells": [],
-  "metadata": {
-    "language_info": {
-      "name": "python"
-    }
-  },
-  "nbformat": 4,
-  "nbformat_minor": 2
-}
