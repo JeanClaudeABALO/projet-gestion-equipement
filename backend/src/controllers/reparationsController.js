@@ -7,6 +7,8 @@ exports.getAll = (req, res) => {
     const sql = `
         SELECT d.*, 
                e.id AS equipement_id,
+               e.quantite,
+               t.nom AS type_nom,
                u.nom AS demandeur_nom,
                dept.id AS departement_id,
                dept.nom AS departement_nom,
@@ -14,6 +16,7 @@ exports.getAll = (req, res) => {
                un.nom AS unite_nom
         FROM demandes_reparation d
         JOIN equipements e ON d.equipement_id = e.id
+        JOIN equipements_types t ON e.type_id = t.id
         JOIN unites un ON e.unite_id = un.id
         JOIN departements dept ON un.departement_id = dept.id
         LEFT JOIN utilisateurs u ON d.demande_par = u.id
@@ -48,6 +51,8 @@ exports.getByDepartement = async (req, res) => {
         const sql = `
             SELECT d.*, 
                    e.id AS equipement_id,
+                   e.quantite,
+                   t.nom AS type_nom,
                    u.nom AS demandeur_nom,
                    dept.id AS departement_id,
                    dept.nom AS departement_nom,
@@ -55,6 +60,7 @@ exports.getByDepartement = async (req, res) => {
                    un.nom AS unite_nom
             FROM demandes_reparation d
             JOIN equipements e ON d.equipement_id = e.id
+            JOIN equipements_types t ON e.type_id = t.id
             JOIN unites un ON e.unite_id = un.id
             JOIN departements dept ON un.departement_id = dept.id
             LEFT JOIN utilisateurs u ON d.demande_par = u.id

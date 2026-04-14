@@ -104,7 +104,19 @@ exports.create = async (req, res) => {
         db.query(sql, values, (err, result) => {
             if (err) return res.status(500).json({ error: err });
 
-            res.json({ message: "Équipement ajouté", id: result.insertId });
+            const newId = result.insertId;
+            // Si l'état est "reparation", créer une demande de réparation
+            if (etat === "reparation") {
+                db.query(
+                    `INSERT INTO demandes_reparation (equipement_id, demande_par, description, statut)
+                     VALUES (?, ?, ?, 'ouvert')`,
+                    [newId, req.user.id, commentaire || "Équipement créé en réparation"],
+                    (err2) => {
+                        if (err2) console.error("Erreur création demande réparation:", err2);
+                    }
+                );
+            }
+            res.json({ message: "Équipement ajouté", id: newId });
         });
     } catch (error) {
         console.error("Erreur création équipement:", error);
@@ -195,7 +207,30 @@ exports.update = async (req, res) => {
             if (result.affectedRows === 0) {
                 return res.status(404).json({ message: "Équipement non trouvé" });
             }
-            res.json({ message: "Équipement modifié" });
+            // Si l'état est "reparation", créer une demande de réparation si aucune n'existe
+            if (etat === "reparation") {
+                db.query(
+                    `SELECT id FROM demandes_reparation 
+                     WHERE equipement_id = ? AND statut IN ('ouvert', 'en_cours') 
+                     LIMIT 1`,
+                    [req.params.id],
+                    (errCheck, existing) => {
+                        if (!errCheck && (!existing || existing.length === 0)) {
+                            db.query(
+                                `INSERT INTO demandes_reparation (equipement_id, demande_par, description, statut)
+                                 VALUES (?, ?, ?, 'ouvert')`,
+                                [req.params.id, req.user.id, commentaire || "Équipement déclaré en réparation"],
+                                (err2) => {
+                                    if (err2) console.error("Erreur création demande réparation:", err2);
+                                }
+                            );
+                        }
+                        res.json({ message: "Équipement modifié" });
+                    }
+                );
+            } else {
+                res.json({ message: "Équipement modifié" });
+            }
         });
     } catch (error) {
         console.error("Erreur modification équipement:", error);

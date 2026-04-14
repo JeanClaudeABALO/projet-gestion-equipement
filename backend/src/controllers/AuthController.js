@@ -13,7 +13,7 @@ exports.login = async (req, res) => {
 
         // Vérifier que JWT_SECRET est défini
         if (!process.env.JWT_SECRET) {
-            console.error("❌ JWT_SECRET n'est pas défini dans les variables d'environnement");
+            console.error("JWT_SECRET n'est pas défini dans les variables d'environnement");
             return res.status(500).json({ message: "Erreur de configuration serveur" });
         }
 
@@ -63,13 +63,15 @@ exports.login = async (req, res) => {
             .query("UPDATE utilisateurs SET last_login = NOW() WHERE id = ?", [user.id]);
 
         // Création token avec le rôle détecté
+        const expiresIn = process.env.JWT_EXPIRES_IN || "24h";
+
         const token = jwt.sign(
             {
                 id: user.id,
                 role: role,
             },
             process.env.JWT_SECRET,
-            { expiresIn: "8h" }
+            { expiresIn }
         );
 
         res.json({
@@ -85,7 +87,7 @@ exports.login = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error("❌ Erreur lors de la connexion:", error);
+        console.error("Erreur lors de la connexion:", error);
         res.status(500).json({ 
             message: "Erreur de connexion", 
             error: process.env.NODE_ENV === "development" ? error.message : undefined
@@ -154,7 +156,7 @@ exports.changePassword = async (req, res) => {
             message: "Mot de passe changé avec succès"
         });
     } catch (error) {
-        console.error("❌ Erreur lors du changement de mot de passe:", error);
+        console.error("Erreur lors du changement de mot de passe:", error);
         res.status(500).json({ 
             message: "Erreur lors du changement de mot de passe", 
             error: process.env.NODE_ENV === "development" ? error.message : undefined
@@ -264,8 +266,8 @@ exports.registerAdmin = async (req, res) => {
             id: result.insertId
         });
     } catch (error) {
-        console.error("❌ Erreur création super admin:", error);
-        console.error("❌ Détails de l'erreur:", {
+        console.error(" Erreur création super admin:", error);
+        console.error(" Détails de l'erreur:", {
             message: error.message,
             code: error.code,
             sqlMessage: error.sqlMessage,

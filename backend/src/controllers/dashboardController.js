@@ -1,5 +1,5 @@
 // dashboardController.js
-const db = require("../config/db"); // ton pool mysql (mysql2 pool)
+const db = require("../config/db"); 
 
 // Utiliser directement db.promise().query() pour mysql2
 const query = async (sql, params) => {
