@@ -2,7 +2,7 @@
   <div class="reparations-pf-page">
     <SidebarPointFocal />
 
-    <div class="content-wrapper">
+    <div class="content-wrapper" :class="{ 'sidebar-hidden': !sidebarOpen }">
       <!-- HEADER -->
       <div class="header-bar">
         <div class="header-content">
@@ -32,7 +32,13 @@
           <tr v-for="r in reparations" :key="r.id">
             <td>{{ r.id }}</td>
             <td>{{ r.unite_nom }}</td>
-            <td>#{{ r.equipement_id }}</td>
+            <td>
+              <span class="equipement-info">
+                {{ r.type_nom || 'Équipement' }}
+                <small v-if="r.quantite > 1">×{{ r.quantite }}</small>
+                <small class="equip-id">#{{ r.equipement_id }}</small>
+              </span>
+            </td>
             <td class="desc">{{ r.description || "-" }}</td>
             <td>
               <span :class="['badge', getStatutClass(r.statut)]">
@@ -89,12 +95,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, inject } from "vue";
 import reparationsApi from "../api/reparations";
 import equipementApi from "../api/equipement";
 import SidebarPointFocal from "../components/SidebarPointFocal.vue";
 
 const reparations = ref([]);
+const sidebarOpen = inject("sidebarOpen", ref(false));
 const equipements = ref([]);
 const showModal = ref(false);
 const form = ref({
@@ -201,6 +208,21 @@ onMounted(loadData);
   margin-left: 220px;
   width: calc(100% - 220px);
   padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+.content-wrapper.sidebar-hidden {
+  margin-left: 0;
+  width: 100%;
+}
+
+.content-wrapper > * {
+  width: 100%;
+  max-width: 1400px;
 }
 
 .header-bar {
@@ -307,6 +329,18 @@ tbody tr {
 tbody tr:hover {
   background: #f8fafc;
   transform: scale(1.01);
+}
+
+.equipement-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.equipement-info .equip-id {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
 }
 
 .desc {

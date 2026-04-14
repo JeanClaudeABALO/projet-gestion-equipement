@@ -554,10 +554,18 @@ onMounted(() => {
   background: #f6f7fb;
   box-sizing: border-box;
   transition: margin-left 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .admin-content.sidebar-hidden {
   margin-left: 0;
+}
+
+.admin-content > * {
+  width: 100%;
+  max-width: 1400px;
 }
 
 /* ===== TITRE ===== */
@@ -577,7 +585,7 @@ onMounted(() => {
   display: flex;
   gap: 24px;
   flex-wrap: wrap;
-  justify-content: flex-start;
+  justify-content: center;
 }
 
 

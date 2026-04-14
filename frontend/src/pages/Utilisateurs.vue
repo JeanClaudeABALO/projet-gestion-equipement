@@ -2,7 +2,7 @@
   <div class="utilisateurs-page">
     <SidebarAdmin />
 
-    <div class="content-wrapper">
+    <div class="content-wrapper" :class="{ 'sidebar-hidden': !sidebarOpen }">
       <!-- HEADER -->
       <div class="header-bar">
         <div class="header-content">
@@ -122,7 +122,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, inject } from "vue";
 import utilisateursApi from "../api/utilisateurs";
 import departementsApi from "../api/departement";
 import UtilisateurModal from "../components/UtilisateurModal.vue";
@@ -132,6 +132,7 @@ import api from "../api/axios";
 const headerScrollRef = ref(null);
 const bodyScrollRef = ref(null);
 const utilisateurs = ref([]);
+const sidebarOpen = inject("sidebarOpen", ref(false));
 const departements = ref([]);
 const showModal = ref(false);
 
@@ -277,6 +278,21 @@ onMounted(loadData);
   margin-left: 220px;
   width: calc(100% - 220px);
   padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+.content-wrapper.sidebar-hidden {
+  margin-left: 0;
+  width: 100%;
+}
+
+.content-wrapper > * {
+  width: 100%;
+  max-width: 1400px;
 }
 
 /* HEADER BAR */

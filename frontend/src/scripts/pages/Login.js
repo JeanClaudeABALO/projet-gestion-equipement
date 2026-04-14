@@ -1,9 +1,10 @@
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import api from "../../api/axios";
 
 export function useLogin() {
   const router = useRouter();
+  const route = useRoute();
   const email = ref("");
   const password = ref("");
   const error = ref("");
@@ -83,6 +84,17 @@ async function login() {
     loading.value = false;
   }
 }
+
+  onMounted(() => {
+    const session = route.query.session;
+    if (session === "expired") {
+      error.value = "Votre session a expiré. Veuillez vous reconnecter.";
+    } else if (session === "invalid") {
+      error.value = "Session invalide (token expiré ou serveur redémarré). Veuillez vous reconnecter.";
+    } else if (session === "required") {
+      error.value = "Veuillez vous connecter pour accéder à cette page.";
+    }
+  });
 
   return {
     email,

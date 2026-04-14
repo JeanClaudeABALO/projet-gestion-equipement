@@ -3,7 +3,7 @@
     <SidebarAdmin v-if="role === 'admin' || role === 'super_admin'" />
     <SidebarPointFocal v-else />
 
-    <div class="content-wrapper">
+    <div class="content-wrapper" :class="{ 'sidebar-hidden': !sidebarOpen }">
       <!-- HEADER -->
       <div class="header-bar">
         <div class="header-content">
@@ -200,7 +200,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, nextTick, watch } from "vue";
+import { ref, onMounted, computed, nextTick, watch, inject } from "vue";
 import equipementApi from "../api/equipement";
 import departementsApi from "../api/departement";
 import unitesApi from "../api/unites";
@@ -211,6 +211,7 @@ import SidebarPointFocal from "../components/SidebarPointFocal.vue";
 import api from "../api/axios";
 
 const role = ref(localStorage.getItem("role") || "admin");
+const sidebarOpen = inject("sidebarOpen", ref(false));
 
 const equipements = ref([]);
 const departements = ref([]);
@@ -503,6 +504,21 @@ onMounted(async () => {
   margin-left: 220px;
   width: calc(100% - 220px);
   padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+.content-wrapper.sidebar-hidden {
+  margin-left: 0;
+  width: 100%;
+}
+
+.content-wrapper > * {
+  width: 100%;
+  max-width: 1400px;
 }
 
 /* HEADER BAR */

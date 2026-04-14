@@ -4,7 +4,7 @@ import { useRoute } from "vue-router";
 const MOBILE_BREAKPOINT = 768;
 
 export function useAppSetup() {
-  const sidebarOpen = ref(true);
+  const sidebarOpen = ref(false);
   const route = useRoute();
   const isMobile = ref(false);
 
@@ -12,8 +12,6 @@ export function useAppSetup() {
     isMobile.value = window.innerWidth < MOBILE_BREAKPOINT;
     if (isMobile.value) {
       sidebarOpen.value = false;
-    } else {
-      sidebarOpen.value = true;
     }
   }
 

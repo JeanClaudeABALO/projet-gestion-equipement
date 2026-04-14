@@ -740,11 +740,19 @@ onActivated(() => {
   min-height: 100vh;
   font-family: 'Inter', 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
   transition: margin-left 0.3s ease, width 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .pf-content.sidebar-hidden {
   margin-left: 0;
   width: 100%;
+}
+
+.pf-content > * {
+  width: 100%;
+  max-width: 1400px;
 }
 
 .page-header {
@@ -778,6 +786,7 @@ onActivated(() => {
   gap: 16px;
   flex-wrap: wrap;
   margin-bottom: 30px;
+  justify-content: center;
 }
 
 .section {

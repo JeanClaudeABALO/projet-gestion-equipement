@@ -2,7 +2,7 @@
   <div class="unites-page">
     <SidebarPointFocal />
 
-    <div class="content-wrapper">
+    <div class="content-wrapper" :class="{ 'sidebar-hidden': !sidebarOpen }">
       <!-- HEADER -->
       <div class="header-bar">
         <div class="header-content">
@@ -153,13 +153,14 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick, watch } from "vue";
+import { ref, computed, onMounted, nextTick, watch, inject } from "vue";
 import unitesApi from "../api/unites";
 import UniteModal from "../components/UniteModal.vue";
 import SidebarPointFocal from "../components/SidebarPointFocal.vue";
 import api from "../api/axios";
 
 const unites = ref([]);
+const sidebarOpen = inject("sidebarOpen", ref(false));
 const showModal = ref(false);
 const searchQuery = ref("");
 const filters = ref({ type_unite: "" });
@@ -326,6 +327,21 @@ onMounted(async () => {
   margin-left: 220px;
   width: calc(100% - 220px);
   padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+.content-wrapper.sidebar-hidden {
+  margin-left: 0;
+  width: 100%;
+}
+
+.content-wrapper > * {
+  width: 100%;
+  max-width: 1400px;
 }
 
 /* HEADER BAR */

@@ -2,7 +2,7 @@
   <div class="departement-page">
     <SidebarAdmin />
 
-    <div class="content-wrapper">
+    <div class="content-wrapper" :class="{ 'sidebar-hidden': !sidebarOpen }">
       <!-- HEADER -->
       <div class="header-bar">
         <div class="header-content">
@@ -94,7 +94,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, inject } from "vue";
 import api from "../api/departement";
 import DepartementModal from "../components/DepartementModal.vue";
 import SidebarAdmin from "../components/SidebarAdmin.vue";
@@ -102,6 +102,7 @@ import SidebarAdmin from "../components/SidebarAdmin.vue";
 const headerScrollRef = ref(null);
 const bodyScrollRef = ref(null);
 const departements = ref([]);
+const sidebarOpen = inject("sidebarOpen", ref(false));
 
 function onTableScroll() {
   if (headerScrollRef.value && bodyScrollRef.value) {
@@ -173,6 +174,21 @@ onMounted(loadDepartements);
   margin-left: 220px;
   width: calc(100% - 220px);
   padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+.content-wrapper.sidebar-hidden {
+  margin-left: 0;
+  width: 100%;
+}
+
+.content-wrapper > * {
+  width: 100%;
+  max-width: 1400px;
 }
 
 /* HEADER BAR */

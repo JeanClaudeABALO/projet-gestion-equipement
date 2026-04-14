@@ -2,7 +2,7 @@
   <div class="reparations-page">
     <SidebarAdmin />
 
-    <div class="content-wrapper">
+    <div class="content-wrapper" :class="{ 'sidebar-hidden': !sidebarOpen }">
       <!-- HEADER -->
       <div class="header-bar">
         <div class="header-content">
@@ -73,7 +73,13 @@
             <td>{{ r.id }}</td>
             <td class="bold">{{ r.departement_nom }}</td>
             <td>{{ r.unite_nom }}</td>
-            <td>#{{ r.equipement_id }}</td>
+            <td>
+              <span class="equipement-info">
+                {{ r.type_nom || 'Équipement' }}
+                <small v-if="r.quantite > 1">×{{ r.quantite }}</small>
+                <small class="equip-id">#{{ r.equipement_id }}</small>
+              </span>
+            </td>
             <td class="desc">{{ r.description || '-' }}</td>
             <td>
               <span :class="['badge', getStatutClass(r.statut)]">
@@ -151,12 +157,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, inject } from "vue";
 import reparationsApi from "../api/reparations";
 import departementsApi from "../api/departement";
 import SidebarAdmin from "../components/SidebarAdmin.vue";
 
 const reparations = ref([]);
+const sidebarOpen = inject("sidebarOpen", ref(false));
 const departements = ref([]);
 
 const filters = ref({
@@ -307,6 +314,21 @@ onMounted(loadData);
   margin-left: 220px;
   width: calc(100% - 220px);
   padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+.content-wrapper.sidebar-hidden {
+  margin-left: 0;
+  width: 100%;
+}
+
+.content-wrapper > * {
+  width: 100%;
+  max-width: 1400px;
 }
 
 /* HEADER BAR */
@@ -482,6 +504,18 @@ tbody tr:hover {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.equipement-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.equipement-info .equip-id {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
 }
 
 .date {
