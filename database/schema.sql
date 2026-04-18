@@ -1,35 +1,63 @@
--- schema.sql
--- Schéma complet pour la "Plateforme de Gestion et de Suivi des Équipements"
--- Conçu pour MySQL 5.7+ / 8.0+
--- Basé sur le cahier des charges fourni. :contentReference[oaicite:1]{index=1}
+-- =============================================================================
+-- schema.sql — Plateforme de Gestion et de Suivi des Équipements
+-- MySQL 5.7+ / 8.0+ | utf8mb4
+-- =============================================================================
+-- Ordre : création base → tables → index complémentaires → vues → triggers
+--         → procédures → données de référence (types d'équipements)
+-- =============================================================================
 
+-- -----------------------------------------------------------------------------
+-- 1. Création de la base de données
+-- -----------------------------------------------------------------------------
+CREATE DATABASE IF NOT EXISTS `gestion_equipements`
+  DEFAULT CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE `gestion_equipements`;
+
+-- -----------------------------------------------------------------------------
+-- 2. Nettoyage (réinstallation propre)
+-- -----------------------------------------------------------------------------
 SET FOREIGN_KEY_CHECKS = 0;
 
-DROP TABLE IF EXISTS logs_modifications;
-DROP TABLE IF EXISTS demandes_reparation;
-DROP TABLE IF EXISTS equipements;
-DROP TABLE IF EXISTS equipements_types;
-DROP TABLE IF EXISTS unites;
-DROP TABLE IF EXISTS departements;
-DROP TABLE IF EXISTS utilisateurs;
-DROP TABLE IF EXISTS roles;
+DROP VIEW IF EXISTS `vue_recap_departement`;
+DROP VIEW IF EXISTS `vue_recap_unite`;
+
+DROP PROCEDURE IF EXISTS `sp_marquer_termine`;
+
+DROP TRIGGER IF EXISTS `trg_equipements_update_log`;
+DROP TRIGGER IF EXISTS `trg_demande_insertion`;
+
+DROP TABLE IF EXISTS `mouvements_equipements`;
+DROP TABLE IF EXISTS `demandes_reparation`;
+DROP TABLE IF EXISTS `logs_modifications`;
+DROP TABLE IF EXISTS `equipements`;
+DROP TABLE IF EXISTS `equipements_types`;
+DROP TABLE IF EXISTS `unites`;
+DROP TABLE IF EXISTS `utilisateurs`;
+DROP TABLE IF EXISTS `departements`;
+DROP TABLE IF EXISTS `roles`;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
--- Table roles (flexible si tu veux ajouter d'autres rôles plus tard)
-CREATE TABLE roles (
+-- =============================================================================
+-- 3. TABLES
+-- =============================================================================
+
+-- Table roles (extensible pour d'autres rôles)
+CREATE TABLE `roles` (
     id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    code VARCHAR(32) NOT NULL UNIQUE, -- ex: "admin", "pf"
+    code VARCHAR(32) NOT NULL UNIQUE,
     libelle VARCHAR(80) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO roles (code, libelle) VALUES
+INSERT INTO `roles` (code, libelle) VALUES
 ('super_admin', 'Super Administrateur'),
 ('admin', 'Administrateur'),
 ('pf', 'Point Focal Départemental');
 
 -- Départements
-CREATE TABLE departements (
+CREATE TABLE `departements` (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(100) NOT NULL UNIQUE,
     code VARCHAR(10) NULL,
@@ -37,11 +65,26 @@ CREATE TABLE departements (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Les 12 départements
+INSERT INTO `departements` (`id`, `nom`) VALUES
+(1, 'Alibori', 'AL'),
+(2, 'Atacora', 'AT'),
+(3, 'Atlantique', 'AQ'),
+(4, 'Borgou', 'BO'),
+(5, 'Collines', 'CO'),
+(6, 'Couffo', 'CF'),
+(7, 'Donga', 'DO'),
+(8, 'Littoral', 'LI'),
+(9, 'Mono', 'MO'),
+(10, 'Ouémé', 'OU'),
+(11, 'Plateau', 'PL'),
+(12, 'Zou', 'ZO');
+
 -- Unités (par département)
-CREATE TABLE unites (
+CREATE TABLE `unites` (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(150) NOT NULL,
-    reference VARCHAR(80) NULL, -- ex: code interne
+    reference VARCHAR(80) NULL,
     departement_id INT UNSIGNED NOT NULL,
     adresse VARCHAR(255) DEFAULT NULL,
     contact VARCHAR(120) DEFAULT NULL,
@@ -52,27 +95,24 @@ CREATE TABLE unites (
 
 CREATE INDEX idx_unites_dept ON unites(departement_id);
 
--- Types d'équipements (Clavier, Souris, Écran, UC, Modem, Onduleur, Regul, Rallonge, ...)
-CREATE TABLE equipements_types (
+-- Types d'équipements
+CREATE TABLE `equipements_types` (
     id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(80) NOT NULL UNIQUE,
     description TEXT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Équipements : représente l'état d'un type d'équipement pour une unité
--- (on peut garder plusieurs enregistrements par unité/type pour historisation, 
---  ou garder un seul enregistrement qui représente l'état courant)
-CREATE TABLE equipements (
+-- Équipements
+CREATE TABLE `equipements` (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     unite_id INT UNSIGNED NOT NULL,
     type_id SMALLINT UNSIGNED NOT NULL,
-    quantite INT UNSIGNED DEFAULT 1, -- nombre d'éléments déclarés
+    quantite INT UNSIGNED DEFAULT 1,
     etat ENUM('fonctionnel','non_fonctionnel','reparation','manquant','vetuste') NOT NULL DEFAULT 'fonctionnel',
     commentaire VARCHAR(500) NULL,
     date_maj DATETIME DEFAULT CURRENT_TIMESTAMP,
-    responsable_id INT UNSIGNED NULL, -- utilisateur ayant fait la dernière MAJ
-    -- pour garder un historisque léger, on conserve last_update_user & date_maj
+    responsable_id INT UNSIGNED NULL,
     CONSTRAINT fk_equipements_unite FOREIGN KEY (unite_id) REFERENCES unites(id) ON DELETE CASCADE,
     CONSTRAINT fk_equipements_type FOREIGN KEY (type_id) REFERENCES equipements_types(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -80,18 +120,19 @@ CREATE TABLE equipements (
 CREATE INDEX idx_equipements_unite ON equipements(unite_id);
 CREATE INDEX idx_equipements_type ON equipements(type_id);
 CREATE INDEX idx_equipements_etat ON equipements(etat);
+CREATE INDEX idx_equipements_unite_type_etat ON equipements(unite_id, type_id, etat);
 
 -- Utilisateurs (Admin + PF)
-CREATE TABLE utilisateurs (
+CREATE TABLE `utilisateurs` (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(150) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL, -- stocker bcrypt
+    password VARCHAR(255) NOT NULL,
     telephone VARCHAR(50) DEFAULT NULL,
     role_id TINYINT UNSIGNED NOT NULL,
-    departement_id INT UNSIGNED NULL, -- nul pour admin ; défini pour PF
+    departement_id INT UNSIGNED NULL,
     actif TINYINT(1) NOT NULL DEFAULT 1,
-    doit_changer_mdp TINYINT(1) NOT NULL DEFAULT 1, -- 1 = doit changer, 0 = mot de passe personnel
+    doit_changer_mdp TINYINT(1) NOT NULL DEFAULT 1,
     date_creation DATETIME DEFAULT CURRENT_TIMESTAMP,
     last_login DATETIME NULL,
     CONSTRAINT fk_users_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE RESTRICT,
@@ -101,8 +142,23 @@ CREATE TABLE utilisateurs (
 CREATE INDEX idx_users_role ON utilisateurs(role_id);
 CREATE INDEX idx_users_dept ON utilisateurs(departement_id);
 
--- Log de modifications (traçabilité complète)
-CREATE TABLE logs_modifications (
+-- Super administrateur initial
+-- Mot de passe en clair correspondant au hash ci-dessous : password
+-- À changer impérativement en production (doit_changer_mdp = 1 force le changement si l'app l'utilise)
+INSERT INTO `utilisateurs` (nom, email, password, telephone, role_id, departement_id, actif, doit_changer_mdp)
+VALUES (
+    'Super Administrateur',
+    'superadmin@cdsp.local',
+    '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    NULL,
+    (SELECT id FROM roles WHERE code = 'super_admin' LIMIT 1),
+    NULL,
+    1,
+    1
+);
+
+-- Logs de modifications
+CREATE TABLE `logs_modifications` (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id INT UNSIGNED NULL,
     equipement_id BIGINT UNSIGNED NULL,
@@ -117,8 +173,8 @@ CREATE TABLE logs_modifications (
 CREATE INDEX idx_logs_user ON logs_modifications(user_id);
 CREATE INDEX idx_logs_equipement ON logs_modifications(equipement_id);
 
--- Table demandes_reparation (pour gérer les réparations)
-CREATE TABLE demandes_reparation (
+-- Demandes de réparation
+CREATE TABLE `demandes_reparation` (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     equipement_id BIGINT UNSIGNED NOT NULL,
     demande_par INT UNSIGNED NULL,
@@ -133,7 +189,8 @@ CREATE TABLE demandes_reparation (
 
 CREATE INDEX idx_demandes_statut ON demandes_reparation(statut);
 
-CREATE TABLE mouvements_equipements (
+-- Mouvements d'équipements
+CREATE TABLE `mouvements_equipements` (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     equipement_id BIGINT UNSIGNED NOT NULL,
     unite_source INT UNSIGNED NOT NULL,
@@ -145,12 +202,14 @@ CREATE TABLE mouvements_equipements (
     CONSTRAINT fk_mvt_source FOREIGN KEY (unite_source) REFERENCES unites(id),
     CONSTRAINT fk_mvt_destination FOREIGN KEY (unite_destination) REFERENCES unites(id),
     CONSTRAINT fk_mvt_user FOREIGN KEY (effectue_par) REFERENCES utilisateurs(id) ON DELETE SET NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- VUES RÉCAPITULATIVES
--- 1) Vue : récapitulatif par unité (nombre par état)
-DROP VIEW IF EXISTS vue_recap_unite;
-CREATE VIEW vue_recap_unite AS
+-- =============================================================================
+-- 4. VUES
+-- =============================================================================
+
+DROP VIEW IF EXISTS `vue_recap_unite`;
+CREATE VIEW `vue_recap_unite` AS
 SELECT
   u.id AS unite_id,
   u.nom AS unite_nom,
@@ -165,9 +224,8 @@ FROM unites u
 LEFT JOIN equipements e ON e.unite_id = u.id
 GROUP BY u.id, u.nom, u.departement_id;
 
--- 2) Vue : récapitulatif par département
-DROP VIEW IF EXISTS vue_recap_departement;
-CREATE VIEW vue_recap_departement AS
+DROP VIEW IF EXISTS `vue_recap_departement`;
+CREATE VIEW `vue_recap_departement` AS
 SELECT
   d.id AS departement_id,
   d.nom AS departement_nom,
@@ -183,11 +241,14 @@ LEFT JOIN unites u ON u.departement_id = d.id
 LEFT JOIN vue_recap_unite vru ON vru.departement_id = d.id
 GROUP BY d.id, d.nom;
 
--- Trigger : chaque fois qu'on met à jour 'equipements.etat' on insère un log dans logs_modifications
-DROP TRIGGER IF EXISTS trg_equipements_update_log;
+-- =============================================================================
+-- 5. TRIGGERS
+-- =============================================================================
+
+DROP TRIGGER IF EXISTS `trg_equipements_update_log`;
 DELIMITER $$
-CREATE TRIGGER trg_equipements_update_log
-AFTER UPDATE ON equipements
+CREATE TRIGGER `trg_equipements_update_log`
+AFTER UPDATE ON `equipements`
 FOR EACH ROW
 BEGIN
   IF NOT (OLD.etat <=> NEW.etat) THEN
@@ -197,11 +258,10 @@ BEGIN
 END$$
 DELIMITER ;
 
--- Trigger : quand on insère une demande_reparation, mettre à jour equipements.etat -> 'reparation'
-DROP TRIGGER IF EXISTS trg_demande_insertion;
+DROP TRIGGER IF EXISTS `trg_demande_insertion`;
 DELIMITER $$
-CREATE TRIGGER trg_demande_insertion
-AFTER INSERT ON demandes_reparation
+CREATE TRIGGER `trg_demande_insertion`
+AFTER INSERT ON `demandes_reparation`
 FOR EACH ROW
 BEGIN
   UPDATE equipements SET etat = 'reparation', date_maj = NOW()
@@ -212,10 +272,13 @@ BEGIN
 END$$
 DELIMITER ;
 
--- Exemple de fonction stockée (procédure) : marquer un équipement comme rendu (termine)
-DROP PROCEDURE IF EXISTS sp_marquer_termine;
+-- =============================================================================
+-- 6. PROCÉDURE STOCKÉE
+-- =============================================================================
+
+DROP PROCEDURE IF EXISTS `sp_marquer_termine`;
 DELIMITER $$
-CREATE PROCEDURE sp_marquer_termine(IN p_equipement_id BIGINT, IN p_user_id INT)
+CREATE PROCEDURE `sp_marquer_termine`(IN p_equipement_id BIGINT, IN p_user_id INT)
 BEGIN
   DECLARE v_old_etat VARCHAR(50);
   SELECT etat INTO v_old_etat FROM equipements WHERE id = p_equipement_id FOR UPDATE;
@@ -225,22 +288,6 @@ BEGIN
 END$$
 DELIMITER ;
 
--- Indexes additionnels pour performances de lecture
-CREATE INDEX idx_equipements_unite_type_etat ON equipements(unite_id, type_id, etat);
-
--- Quelques données initiales (optionnel) : types d'équipements standards
-INSERT IGNORE INTO equipements_types (nom, description) VALUES
-('Clavier', 'Clavier standard USB/PS2'),
-('Souris', 'Souris optique'),
-('Ecran', 'Moniteur'),
-('Unite_Centrale', 'UC / Tour'),
-('Modem', 'Modem/Routeur'),
-('Onduleur', 'Onduleur'),
-('Regulateur', 'Régulateur de tension'),
-('Rallonge', 'Rallonge électrique'),
-('Scanner', 'Scanner de documents');
-
--- Exemple : utilisateur admin par défaut (mot de passe à remplacer) -- mot de passe hashé à générer en backend
--- INSERT INTO utilisateurs (nom, email, password, role_id) VALUES ('Admin', 'admin@example.com', '<bcrypt-hash>', 1);
-
+-- =============================================================================
 -- FIN DU SCHÉMA
+-- =============================================================================
